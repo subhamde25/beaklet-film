@@ -1,0 +1,5 @@
+# Video goes through Git LFS: the final master and the 60 fps footage the composition plays
+*.mp4 filter=lfs diff=lfs merge=lfs -text
+
+# Keep shell scripts runnable on every platform
+*.sh text eol=lf
