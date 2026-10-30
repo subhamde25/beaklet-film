@@ -1,0 +1,1158 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "Instrument Serif";
+        src: url("assets/fonts/InstrumentSerif-Regular.ttf") format("truetype");
+        font-weight: 400;
+        font-style: normal;
+      }
+      @font-face {
+        font-family: "Instrument Serif";
+        src: url("assets/fonts/InstrumentSerif-Italic.ttf") format("truetype");
+        font-weight: 400;
+        font-style: italic;
+      }
+      :root {
+        --bg: #0e0b09;
+        --fg: #f1e6d6;
+        --accent: #e0a82e;
+        --muted: #b3a291;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--bg);
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: "Instrument Serif", serif;
+      }
+
+      /* ---------- footage ---------- */
+      .vwrap {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+      }
+      .inner {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .vwrap video,
+      .panel video,
+      .card video {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      /* ---------- type system ---------- */
+      .scene {
+        position: absolute;
+        inset: 0;
+        width: 1080px;
+        height: 1920px;
+        z-index: 30;
+      }
+      .mono {
+        font-family: "Space Mono", monospace;
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: 0.26em;
+        font-size: 26px;
+        color: var(--muted);
+      }
+      .mono.gold {
+        color: var(--accent);
+      }
+      .serif {
+        font-family: "Instrument Serif", serif;
+        font-weight: 400;
+        letter-spacing: -0.02em;
+        line-height: 0.95;
+        color: var(--fg);
+      }
+      .ink {
+        font-style: italic;
+        color: var(--accent);
+      }
+      .chapter {
+        position: absolute;
+        left: 80px;
+        top: 92px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        font-size: 22px;
+      }
+      .chapter .rule {
+        display: block;
+        width: 56px;
+        height: 1px;
+        background: var(--accent);
+      }
+      .line-mask {
+        display: block;
+        overflow: hidden;
+        padding-bottom: 0.12em;
+      }
+      .line-mask > span {
+        display: block;
+      }
+      .scrim-top {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1080px;
+        height: 980px;
+        background: linear-gradient(180deg, rgba(14, 11, 9, 0.92) 0%, rgba(14, 11, 9, 0.72) 45%, rgba(14, 11, 9, 0) 100%);
+      }
+      .scrim-bottom {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 1080px;
+        height: 1000px;
+        background: linear-gradient(0deg, rgba(14, 11, 9, 0.95) 0%, rgba(14, 11, 9, 0.75) 50%, rgba(14, 11, 9, 0) 100%);
+      }
+      .center-col {
+        position: absolute;
+        left: 90px;
+        width: 900px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      /* ---------- S1 hook ---------- */
+      #ruled {
+        position: absolute;
+        inset: 0;
+      }
+      #ruled .rl {
+        position: absolute;
+        left: 0;
+        width: 1080px;
+        height: 1px;
+        background: rgba(241, 230, 214, 0.1);
+      }
+      #ruled .margin {
+        position: absolute;
+        left: 150px;
+        top: 0;
+        width: 1px;
+        height: 1920px;
+        background: rgba(224, 168, 46, 0.35);
+      }
+      #phone {
+        position: absolute;
+        left: 250px;
+        top: 400px;
+        width: 580px;
+        height: 1120px;
+        overflow: visible;
+      }
+      .slam {
+        position: absolute;
+        left: 0;
+        top: 820px;
+        width: 1080px;
+        height: 300px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Space Mono", monospace;
+        font-weight: 700;
+        letter-spacing: -0.04em;
+        color: var(--fg);
+        white-space: nowrap;
+        line-height: 1;
+      }
+      .slam .p {
+        color: var(--accent);
+      }
+      #io-label {
+        position: absolute;
+        left: 90px;
+        top: 1210px;
+        width: 900px;
+        text-align: center;
+        font-size: 22px;
+      }
+      #ask {
+        position: absolute;
+        left: 90px;
+        top: 560px;
+        width: 900px;
+        text-align: center;
+        font-size: 92px;
+      }
+      #ask .wd {
+        display: inline-block;
+        margin: 0 0.12em;
+      }
+      #dot {
+        position: absolute;
+        left: 523px;
+        top: 943px;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: var(--accent);
+      }
+      #trail {
+        position: absolute;
+        left: 538px;
+        top: 760px;
+        width: 4px;
+        height: 640px;
+        overflow: visible;
+      }
+      #ripple {
+        position: absolute;
+        left: 240px;
+        top: 1100px;
+        width: 600px;
+        height: 600px;
+        overflow: visible;
+      }
+      #rays {
+        position: absolute;
+        left: -460px;
+        top: 160px;
+        width: 2000px;
+        height: 2000px;
+        overflow: visible;
+      }
+      #write-word {
+        position: absolute;
+        left: 0;
+        top: 930px;
+        width: 1080px;
+        text-align: center;
+        font-size: 380px;
+        line-height: 1;
+      }
+      #write-underline {
+        position: absolute;
+        left: 200px;
+        top: 1330px;
+        width: 680px;
+        height: 64px;
+      }
+      #mustard-fill {
+        position: absolute;
+        left: 523px;
+        top: 1363px;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: var(--accent);
+      }
+
+      #mustard-hole {
+        position: absolute;
+        inset: 0;
+        background: var(--accent);
+        opacity: 0;
+        --r: 0px;
+        -webkit-mask-image: radial-gradient(circle at 540px 1380px, transparent var(--r), #000 calc(var(--r) + 3px));
+        mask-image: radial-gradient(circle at 540px 1380px, transparent var(--r), #000 calc(var(--r) + 3px));
+      }
+
+      /* ---------- S2 stacked panels ---------- */
+      .panel {
+        position: absolute;
+        left: 0;
+        width: 1080px;
+        height: 540px;
+        overflow: hidden;
+        opacity: 0;
+        border-top: 1px solid rgba(241, 230, 214, 0.25);
+        border-bottom: 1px solid rgba(241, 230, 214, 0.25);
+      }
+      .panel .plabel {
+        position: absolute;
+        left: 40px;
+        top: 30px;
+        font-size: 20px;
+        color: var(--fg);
+        display: flex;
+        gap: 16px;
+        align-items: center;
+      }
+      .panel .plabel b {
+        display: block;
+        width: 40px;
+        height: 1px;
+        background: var(--accent);
+      }
+      .panel .pcode {
+        position: absolute;
+        right: 40px;
+        bottom: 28px;
+        font-size: 18px;
+        color: var(--accent);
+      }
+      #banner {
+        position: absolute;
+        left: -120px;
+        top: 870px;
+        width: 1320px;
+        height: 230px;
+        background: var(--accent);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+      }
+      #banner .bt {
+        font-family: "Instrument Serif", serif;
+        font-style: italic;
+        font-size: 150px;
+        color: #14100c;
+        letter-spacing: -0.02em;
+        white-space: nowrap;
+      }
+
+      /* ---------- S3 hornbill ---------- */
+      #glow {
+        position: absolute;
+        left: 40px;
+        top: 360px;
+        width: 1000px;
+        height: 1000px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(224, 168, 46, 0.22) 0%, rgba(224, 168, 46, 0) 65%);
+      }
+      #hornbill {
+        position: absolute;
+        left: 70px;
+        top: 560px;
+        width: 940px;
+        height: 658px;
+        overflow: visible;
+      }
+      #hornbill .ln {
+        fill: none;
+        stroke: var(--fg);
+        stroke-width: 3.2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      #hornbill .ln.gold {
+        stroke: var(--accent);
+      }
+
+      /* ---------- S5 words ---------- */
+      .word-slot {
+        position: absolute;
+        left: 90px;
+        top: 1300px;
+        width: 900px;
+        height: 330px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        text-align: center;
+      }
+      .word-slot .icon {
+        display: block;
+        width: 104px;
+        height: 104px;
+        margin-bottom: 14px;
+      }
+      .word-slot .icon path {
+        fill: none;
+        stroke: var(--accent);
+        stroke-width: 3.5;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .word-slot .w {
+        font-size: 170px;
+      }
+
+      /* ---------- 16:9 showcase ---------- */
+      #sc-fill .inner {
+        filter: blur(30px) brightness(0.42) saturate(1.15);
+      }
+      .card {
+        position: absolute;
+        overflow: hidden;
+        background: #050403;
+      }
+      #sc-card {
+        left: 60px;
+        top: 330px;
+        width: 960px;
+        height: 540px;
+        box-shadow: 0 50px 90px rgba(0, 0, 0, 0.65);
+        outline: 1px solid rgba(241, 230, 214, 0.3);
+      }
+      #sc-inset {
+        left: 560px;
+        top: 990px;
+        width: 420px;
+        height: 420px;
+        box-shadow: 0 40px 70px rgba(0, 0, 0, 0.6);
+        outline: 1px solid rgba(224, 168, 46, 0.8);
+      }
+      #sweep-light {
+        position: absolute;
+        left: -40%;
+        top: -20%;
+        width: 70%;
+        height: 140%;
+        background: linear-gradient(100deg, rgba(255, 244, 220, 0) 0%, rgba(255, 244, 220, 0.05) 30%, rgba(255, 244, 220, 0.16) 50%, rgba(255, 244, 220, 0.05) 70%, rgba(255, 244, 220, 0) 100%);
+        mix-blend-mode: screen;
+      }
+      .sc-svg {
+        position: absolute;
+        overflow: visible;
+      }
+      .sc-svg path,
+      .sc-svg circle,
+      .sc-svg line {
+        fill: none;
+        stroke: var(--accent);
+        stroke-width: 2.5;
+        stroke-linecap: square;
+      }
+      #sc-labels {
+        position: absolute;
+        left: 60px;
+        top: 270px;
+        width: 960px;
+        height: 40px;
+        font-size: 20px;
+      }
+      #sc-labels .l {
+        position: absolute;
+        left: 0;
+        top: 0;
+        color: var(--fg);
+      }
+      #sc-labels .r {
+        position: absolute;
+        right: 0;
+        top: 0;
+        color: var(--accent);
+      }
+      #sc-dimtext {
+        position: absolute;
+        left: 60px;
+        top: 893px;
+        width: 960px;
+        text-align: center;
+        font-size: 18px;
+        color: var(--muted);
+      }
+
+      /* ---------- S7 end card ---------- */
+      #end-glow {
+        position: absolute;
+        left: -60px;
+        top: 260px;
+        width: 1200px;
+        height: 1200px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(224, 168, 46, 0.16) 0%, rgba(224, 168, 46, 0) 62%);
+      }
+      /* brand lockup — vectors extracted from the Beaklet brand book (wordmark p.02, monogram p.04) */
+      #brand-mono {
+        position: absolute;
+        left: 380px;
+        top: 520px;
+        width: 320px;
+        height: 168px;
+        overflow: visible;
+      }
+      #brand-word {
+        position: absolute;
+        left: 150px;
+        top: 790px;
+        width: 780px;
+        height: 94px;
+        overflow: visible;
+      }
+
+      /* ---------- finishing layers ---------- */
+      #flash {
+        position: absolute;
+        inset: 0;
+        background: var(--fg);
+        opacity: 0;
+        z-index: 85;
+        pointer-events: none;
+      }
+      #grain {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        pointer-events: none;
+        z-index: 100;
+        mix-blend-mode: overlay;
+        opacity: 0.22;
+      }
+      #grain .tex {
+        position: absolute;
+        left: -50%;
+        top: -50%;
+        width: 200%;
+        height: 200%;
+        background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      }
+      #hf-vignette {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 90;
+        background: radial-gradient(ellipse at center, transparent 52%, rgba(8, 6, 4, 0.7) 100%);
+      }
+      #watermark {
+        position: absolute;
+        right: 64px;
+        top: 70px;
+        width: 92px;
+        height: auto;
+        opacity: 0.55;
+        z-index: 110;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="45" data-width="1080" data-height="1920">
+      <!-- ================= FOOTAGE (untimed wrappers, timed videos; 60fps stabilised sources) ================= -->
+      <div class="vwrap" id="w-writing" data-layout-allow-overflow style="z-index: 2">
+        <div class="inner" data-layout-allow-overflow>
+          <video id="v-writing" class="clip" src="assets/hd60/writing.mp4" data-start="5.7" data-duration="3.1" data-media-start="0" data-track-index="1" muted playsinline></video>
+        </div>
+      </div>
+
+      <!-- S2 stacked panels (Rotoris-style collage) -->
+      <div class="panel" id="p1" data-layout-allow-overflow style="top: 200px; z-index: 12">
+        <div class="inner" data-layout-allow-overflow>
+          <video id="v-p1" class="clip" src="assets/hd60/cap-logo.mp4" data-start="8.7" data-duration="3.3" data-media-start="3.2" data-track-index="1" muted playsinline></video>
+        </div>
+        <div class="plabel mono"><b></b><span>Fig. 01 — The beak</span></div>
+        <div class="pcode mono">BK/01</div>
+      </div>
+      <div class="panel" id="p2" data-layout-allow-overflow style="top: 758px; z-index: 12">
+        <div class="inner" data-layout-allow-overflow>
+          <video id="v-p2" class="clip" src="assets/hd60/duo-angle.mp4" data-start="8.7" data-duration="3.3" data-media-start="2.5" data-track-index="2" muted playsinline></video>
+        </div>
+        <div class="plabel mono"><b></b><span>Fig. 02 — The nib</span></div>
+        <div class="pcode mono">BK/02</div>
+      </div>
+      <div class="panel" id="p3" data-layout-allow-overflow style="top: 1316px; z-index: 12">
+        <div class="inner" data-layout-allow-overflow>
+          <video id="v-p3" class="clip" src="assets/hd60/cap-rise-a.mp4" data-start="8.7" data-duration="3.3" data-media-start="4.5" data-track-index="3" muted playsinline></video>
+        </div>
+        <div class="plabel mono"><b></b><span>Fig. 03 — The cap</span></div>
+        <div class="pcode mono">BK/03</div>
+      </div>
+      <div id="banner" style="z-index: 13"><span class="bt">Worth keeping.</span></div>
+
+      <div class="vwrap" id="w-caprise-a" data-layout-allow-overflow style="z-index: 3">
+        <div class="inner" data-layout-allow-overflow>
+          <video id="v-caprise-a" class="clip" src="assets/hd60/cap-rise-a.mp4" data-start="17" data-duration="4" data-media-start="1.3" data-track-index="1" muted playsinline></video>
+        </div>
+      </div>
+      <div class="vwrap" id="w-caplogo" data-layout-allow-overflow style="z-index: 4">
+        <div class="inner" data-layout-allow-overflow>
+          <video id="v-caplogo" class="clip" src="assets/hd60/cap-logo.mp4" data-start="21" data-duration="3.36" data-media-start="1.0" data-track-index="1" muted playsinline></video>
+        </div>
+      </div>
+      <div class="vwrap" id="w-duowide" data-layout-allow-overflow style="z-index: 5">
+        <div class="inner" data-layout-allow-overflow>
+          <video id="v-duowide" class="clip" src="assets/hd60/duo-wide.mp4" data-start="24.36" data-duration="1.51" data-media-start="0.7" data-track-index="1" muted playsinline></video>
+        </div>
+      </div>
+      <div class="vwrap" id="w-caprise-b" data-layout-allow-overflow style="z-index: 6">
+        <div class="inner" data-layout-allow-overflow>
+          <video id="v-caprise-b" class="clip" src="assets/hd60/cap-rise-b.mp4" data-start="25.87" data-duration="1.51" data-media-start="0.5" data-track-index="1" muted playsinline></video>
+        </div>
+      </div>
+
+      <!-- 16:9 SHOWCASE (27.38 – 36.4): blurred ambient fill + framed card + detail inset -->
+      <div class="vwrap" id="sc-fill" data-layout-allow-overflow style="z-index: 7; opacity: 0">
+        <div class="inner" data-layout-allow-overflow>
+          <video id="f-disc" class="clip" src="assets/hd60/disc-flip-h.mp4" data-start="27.38" data-duration="1.51" data-media-start="1.8167" data-track-index="4" muted playsinline></video>
+          <video id="f-lyingdark" class="clip" src="assets/hd60/lying-dark-h.mp4" data-start="28.89" data-duration="0.76" data-media-start="4.0167" data-track-index="4" muted playsinline></video>
+          <video id="f-hero" class="clip" src="assets/hd60/hero-h.mp4" data-start="29.65" data-duration="3.95" data-media-start="0.5167" data-track-index="4" muted playsinline></video>
+          <video id="f-sweep" class="clip" src="assets/hd60/lying-sweep-h.mp4" data-start="33.6" data-duration="2.8" data-media-start="6.3167" data-track-index="4" muted playsinline></video>
+        </div>
+      </div>
+      <div class="card" id="sc-card" data-layout-allow-overflow style="z-index: 8; opacity: 0">
+        <div class="inner" id="sc-card-inner" data-layout-allow-overflow>
+          <video id="v-disc" class="clip" src="assets/hd60/disc-flip-h.mp4" data-start="27.38" data-duration="1.51" data-media-start="1.8" data-track-index="1" muted playsinline></video>
+          <video id="v-lyingdark" class="clip" src="assets/hd60/lying-dark-h.mp4" data-start="28.89" data-duration="0.76" data-media-start="4" data-track-index="1" muted playsinline></video>
+          <video id="v-hero" class="clip" src="assets/hd60/hero-h.mp4" data-start="29.65" data-duration="3.95" data-media-start="0.5" data-track-index="1" muted playsinline></video>
+          <video id="v-sweep" class="clip" src="assets/hd60/lying-sweep-h.mp4" data-start="33.6" data-duration="2.8" data-media-start="6.3" data-track-index="1" muted playsinline></video>
+        </div>
+        <div id="sweep-light"></div>
+      </div>
+      <div class="card" id="sc-inset" data-layout-allow-overflow style="z-index: 9; opacity: 0">
+        <div class="inner" id="sc-inset-inner" data-layout-allow-overflow>
+          <video id="i-hero" class="clip" src="assets/hd60/hero-h.mp4" data-start="29.65" data-duration="3.95" data-media-start="0.5083" data-track-index="5" muted playsinline></video>
+        </div>
+      </div>
+      <div id="sc-chrome" style="position: absolute; inset: 0; z-index: 10; opacity: 0">
+        <svg class="sc-svg" id="sc-marks" style="left: 40px; top: 310px; width: 1000px; height: 580px" viewBox="0 0 1000 580">
+          <path d="M0 44 V0 H44" />
+          <path d="M956 0 H1000 V44" />
+          <path d="M1000 536 V580 H956" />
+          <path d="M44 580 H0 V536" />
+        </svg>
+        <svg class="sc-svg" id="sc-dim" style="left: 60px; top: 890px; width: 960px; height: 28px" viewBox="0 0 960 28">
+          <path d="M1 2 V26" />
+          <path d="M1 14 H330" />
+          <path d="M630 14 H959" />
+          <path d="M959 2 V26" />
+        </svg>
+        <div id="sc-dimtext" class="mono">BK—01 · Fountain pen</div>
+        <div id="sc-labels" class="mono">
+          <span class="l" id="scl-1">Fig. 04 — Motion</span>
+          <span class="l" id="scl-2">Fig. 05 — Form</span>
+          <span class="l" id="scl-3">Fig. 06 — The hero</span>
+          <span class="l" id="scl-4">Fig. 07 — Light study</span>
+          <span class="r">Beaklet · 2026</span>
+        </div>
+        <svg class="sc-svg" id="sc-callout" style="left: 0; top: 0; width: 1080px; height: 1920px" viewBox="0 0 1080 1920">
+          <circle id="co-ring" cx="318" cy="452" r="34" />
+          <path id="co-line" d="M342 476 L 470 604 L 470 990 L 560 990" />
+        </svg>
+      </div>
+
+      <div class="vwrap" id="w-duoangle" data-layout-allow-overflow style="z-index: 11">
+        <div class="inner" data-layout-allow-overflow>
+          <video id="v-duoangle" class="clip" src="assets/hd60/duo-angle.mp4" data-start="36.4" data-duration="4.1" data-media-start="0.7" data-track-index="1" muted playsinline></video>
+        </div>
+      </div>
+
+      <!-- ================= S1 · HOOK (0 – 6.3) ================= -->
+      <div id="s1" class="clip scene" data-start="0" data-duration="6.3" data-track-index="10">
+        <div id="ruled"></div>
+        <svg id="rays" viewBox="-1000 -1000 2000 2000"><g id="rays-g"></g></svg>
+        <svg id="phone" viewBox="0 0 580 1120">
+          <path id="phone-path" d="M80 2 H500 C 545 2, 578 35, 578 80 V1040 C 578 1085, 545 1118, 500 1118 H80 C 35 1118, 2 1085, 2 1040 V80 C 2 35, 35 2, 80 2 Z M230 40 H350" fill="none" stroke="#f1e6d6" stroke-opacity="0.55" stroke-width="3" stroke-linecap="round" />
+        </svg>
+        <div class="slam" id="sw1" style="font-size: 300px">TYPE<span class="p">.</span></div>
+        <div class="slam" id="sw2" style="font-size: 380px">TAP<span class="p">.</span></div>
+        <div class="slam" id="sw3" style="font-size: 236px">SCROLL<span class="p">.</span></div>
+        <div class="slam" id="sw4" style="font-size: 268px">SWIPE<span class="p">.</span></div>
+        <div id="io-label" class="mono">Input · keyboard &nbsp;—&nbsp; Output · pixels</div>
+        <div id="ask" class="serif ink"><span class="wd">when</span><span class="wd">did</span><span class="wd">you</span><span class="wd">last…</span></div>
+        <svg id="trail" viewBox="0 0 4 640"><path id="trail-path" d="M2 0 V640" stroke="#e0a82e" stroke-width="2" stroke-opacity="0.6" /></svg>
+        <svg id="ripple" viewBox="0 0 600 600">
+          <circle class="rp" cx="300" cy="300" r="60" fill="none" stroke="#e0a82e" stroke-width="3" />
+          <circle class="rp" cx="300" cy="300" r="60" fill="none" stroke="#e0a82e" stroke-width="2" />
+          <circle class="rp" cx="300" cy="300" r="60" fill="none" stroke="#f1e6d6" stroke-width="1.5" />
+        </svg>
+        <div id="write-word" class="serif ink">write?</div>
+        <svg id="write-underline" viewBox="0 0 680 64">
+          <path id="ul1" d="M8 36 C 130 18, 260 50, 390 32 S 600 22, 672 30" fill="none" stroke="#e0a82e" stroke-width="6" stroke-linecap="round" />
+        </svg>
+        <div id="dot"></div>
+        <div id="mustard-fill"></div>
+        <div id="mustard-hole"></div>
+        <div class="chapter mono" data-layout-allow-occlusion><span class="rule"></span><span data-layout-allow-occlusion>01 — Screen</span></div>
+      </div>
+
+      <!-- ================= S2 · INK (5.7 – 12) ================= -->
+      <div id="s2" class="clip scene" data-start="5.9" data-duration="6.1" data-track-index="11">
+        <div class="scrim-top" id="s2-scrim"></div>
+        <div class="chapter mono" data-layout-allow-occlusion><span class="rule"></span><span data-layout-allow-occlusion>02 — Ink</span></div>
+        <div class="center-col" style="top: 250px" id="s2-text">
+          <div class="mono gold" id="s2-label">Introducing</div>
+          <div class="serif" id="s2-brand" style="font-size: 210px; margin-top: 26px">Beaklet</div>
+          <div class="serif ink" id="s2-sub" style="font-size: 64px; margin-top: 30px; max-width: 820px; line-height: 1.05">pens for a generation raised on screens.</div>
+        </div>
+      </div>
+
+      <!-- ================= S3 · THE GUIDE (12 – 17.1) ================= -->
+      <div id="s3" class="clip scene" data-start="12" data-duration="5.1" data-track-index="12">
+        <div id="glow"></div>
+        <div class="chapter mono" data-layout-allow-occlusion><span class="rule"></span><span data-layout-allow-occlusion>03 — The Guide</span></div>
+        <div class="center-col" style="top: 380px">
+          <div class="mono gold" id="s3-label">Our curious traveller</div>
+        </div>
+        <svg id="hornbill" viewBox="0 0 1000 700">
+          <path class="ln gold fillable" id="hb-casque" data-fill="#e0a82e" d="M400 228 C 430 150, 530 118, 650 132 C 740 143, 800 180, 830 232 C 760 240, 560 248, 410 262 Z" />
+          <path class="ln gold fillable" id="hb-patch" data-fill="#14100c" d="M650 132 C 740 143, 800 180, 830 232 C 790 236, 730 238, 690 240 C 700 200, 690 160, 650 132 Z" />
+          <path class="ln fillable" id="hb-beak" data-fill="#efe0c4" d="M410 262 C 560 248, 740 246, 830 300 C 885 334, 922 380, 940 430 C 870 400, 760 372, 640 362 C 560 356, 480 352, 420 350 Z" />
+          <path class="ln" id="hb-mouth" d="M425 306 C 560 304, 730 318, 905 404" />
+          <path class="ln" id="hb-head" d="M180 690 C 170 560, 150 430, 210 330 C 255 255, 330 215, 400 228" />
+          <path class="ln" id="hb-throat" d="M420 350 C 400 420, 362 470, 334 560 C 318 612, 308 650, 302 690" />
+          <path class="ln gold" id="hb-cheek" d="M286 336 C 318 372, 372 372, 408 344" />
+          <circle class="ln" id="hb-eyering" cx="352" cy="286" r="26" />
+          <circle id="hb-eye" cx="352" cy="286" r="11" fill="#e0a82e" />
+          <path class="ln" id="hb-f1" d="M215 470 C 235 500, 250 540, 252 590" />
+          <path class="ln" id="hb-f2" d="M250 430 C 272 470, 286 520, 286 580" />
+        </svg>
+        <div class="center-col" style="top: 1270px">
+          <div class="serif ink" id="s3-name" style="font-size: 96px; line-height: 1">the Malabar Pied Hornbill</div>
+          <div class="mono" id="s3-meta" style="margin-top: 30px">Lover of art · culture · cities</div>
+        </div>
+      </div>
+
+      <!-- ================= S4 · THE SIGNATURE (17 – 24.36) ================= -->
+      <div id="s4" class="clip scene" data-start="17" data-duration="7.36" data-track-index="13">
+        <div class="scrim-top"></div>
+        <div class="chapter mono" data-layout-allow-occlusion><span class="rule"></span><span data-layout-allow-occlusion>04 — The Signature</span></div>
+        <div class="center-col" style="top: 250px" id="s4a">
+          <span class="line-mask"><span class="serif" style="font-size: 150px">Its beak</span></span>
+          <span class="line-mask"><span class="serif ink" style="font-size: 140px">became our clip.</span></span>
+        </div>
+        <div class="center-col" style="top: 250px" id="s4b">
+          <div class="mono gold" id="s4b-label">The Beaklet silhouette</div>
+          <span class="line-mask" style="margin-top: 26px"><span class="serif" style="font-size: 150px">One shape.</span></span>
+          <span class="line-mask"><span class="serif ink" style="font-size: 140px">Endless stories.</span></span>
+        </div>
+      </div>
+
+      <!-- ================= S5 · WORLDS (24.36 – 33.6) ================= -->
+      <div id="s5" class="clip scene" data-start="24.36" data-duration="9.24" data-track-index="14">
+        <div class="scrim-bottom" id="s5-scrim"></div>
+        <div class="chapter mono" data-layout-allow-occlusion><span class="rule"></span><span data-layout-allow-occlusion>05 — Worlds</span></div>
+        <div class="word-slot" id="ws1">
+          <svg class="icon" viewBox="0 0 120 120"><path d="M8 110 V72 H28 V44 H48 V82 H60 V24 H82 V60 H100 V110 M8 110 H112 M68 38 H74 M68 52 H74 M34 58 H40" /></svg>
+          <div class="serif w">Cities.</div>
+        </div>
+        <div class="word-slot" id="ws2">
+          <svg class="icon" viewBox="0 0 120 120"><path d="M14 110 H106 M26 110 V72 H94 V110 M26 72 C 26 42, 56 30, 60 12 C 64 30, 94 42, 94 72 M60 12 V4 M50 110 V88 C 50 80, 70 80, 70 88 V110" /></svg>
+          <div class="serif w">Cultures.</div>
+        </div>
+        <div class="word-slot" id="ws3">
+          <svg class="icon" viewBox="0 0 120 120"><path d="M96 10 L52 72 M58 64 L46 80 M46 80 C 32 84, 30 100, 14 108 C 36 112, 52 102, 52 88 Z M60 108 C 76 100, 92 104, 108 96" /></svg>
+          <div class="serif w ink">Art.</div>
+        </div>
+        <div class="word-slot" id="ws4">
+          <svg class="icon" viewBox="0 0 120 120"><path d="M18 22 H102 M26 32 H94 M36 32 V98 M60 32 V98 M84 32 V98 M26 98 H94 M16 110 H104 M60 6 L18 22 M60 6 L102 22" /></svg>
+          <div class="serif w">Architecture.</div>
+        </div>
+        <div class="word-slot" id="ws5">
+          <svg class="icon" viewBox="0 0 120 120"><path d="M34 12 H86 M34 108 H86 M40 12 C 40 46, 80 46, 80 60 C 80 74, 40 74, 40 108 M80 12 C 80 46, 40 46, 40 60 C 40 74, 80 74, 80 108 M50 100 H70" /></svg>
+          <div class="serif w ink">History.</div>
+        </div>
+        <div id="ws6" style="position: absolute; left: 80px; top: 1010px; width: 460px">
+          <span class="line-mask"><span class="serif" style="font-size: 124px">becomes</span></span>
+          <span class="line-mask"><span class="serif ink" style="font-size: 156px">a pen.</span></span>
+          <div class="mono" style="font-size: 18px; margin-top: 28px; line-height: 1.6">Detail · beak clip</div>
+        </div>
+        <div class="center-col" style="top: 330px" id="s5-top">
+          <div class="mono gold">Every journey</div>
+        </div>
+      </div>
+
+      <!-- ================= S6 · CRAFT (33.6 – 40.5) ================= -->
+      <div id="s6" class="clip scene" data-start="33.6" data-duration="6.9" data-track-index="15">
+        <div class="chapter mono" data-layout-allow-occlusion><span class="rule"></span><span data-layout-allow-occlusion>06 — Craft</span></div>
+        <div class="center-col" style="top: 1010px" id="s6a">
+          <span class="line-mask"><span class="serif" style="font-size: 150px">Premium.</span></span>
+          <span class="line-mask"><span class="serif ink" style="font-size: 120px">Never old-fashioned.</span></span>
+        </div>
+        <div class="scrim-top" id="s6-scrim"></div>
+        <div class="center-col" style="top: 250px" id="s6b">
+          <div class="mono gold" id="s6b-label">Collectible writing instruments</div>
+          <span class="line-mask" style="margin-top: 26px"><span class="serif" style="font-size: 160px">Collect</span></span>
+          <span class="line-mask"><span class="serif ink" style="font-size: 160px">the world.</span></span>
+        </div>
+      </div>
+
+      <!-- ================= S7 · END CARD (40.4 – 45) ================= -->
+      <div id="s7" class="clip scene" data-start="40.4" data-duration="4.6" data-track-index="16">
+        <div id="end-glow"></div>
+        <svg id="brand-mono" viewBox="0 0 278.30 146.11"><path id="mg-oval" d="M278.3 73.05C278.3 113.4 216.0 146.11 139.15 146.11C62.3 146.11 0.0 113.4 0.0 73.05C0.0 32.71 62.3 0.0 139.15 0.0C216.0 0.0 278.3 32.71 278.3 73.05" fill="#F9FAFB"/><g id="mg-bird-g"><path id="mg-bird" d="M152.92 68.95L127.31 94.58L147.86 74.62C161.99 60.51 181.12 52.58 201.08 52.58L219.76 52.58L217.98 54.36C207.93 64.39 195.52 71.67 181.87 75.51L154.0 83.39L172.47 83.39C181.62 83.39 190.6 81.15 198.68 76.86C196.56 77.98 194.34 82.09 192.6 83.87C190.34 86.18 187.93 88.33 185.4 90.35C180.31 94.37 174.71 97.76 168.77 100.39C155.85 106.1 141.22 108.32 127.23 106.16C122.66 105.45 118.16 104.35 113.76 102.98C91.45 96.07 68.75 92.57 46.52 101.78C43.22 103.15 40.05 104.73 36.98 106.49C40.47 101.37 45.15 97.15 50.63 94.23C54.91 91.92 59.66 90.43 64.72 89.93C63.44 89.79 62.13 89.72 60.8 89.72C58.37 89.72 55.99 89.95 53.66 90.39C46.96 91.65 40.88 94.66 35.9 98.96C39.28 92.88 44.28 87.84 50.32 84.37C50.32 84.37 45.63 76.07 61.61 73.58C67.23 72.71 73.17 73.87 78.63 75.2C84.79 76.71 90.83 78.79 96.76 81.09C101.25 82.83 105.71 84.7 110.05 86.82C109.2 86.61 108.32 86.38 107.45 86.45C106.58 86.51 105.69 86.9 105.25 87.67C104.71 88.56 104.96 89.77 105.63 90.55C106.29 91.34 107.29 91.8 108.3 92.03C108.99 92.17 109.65 92.24 110.3 92.24C113.2 92.15 115.75 90.51 117.87 88.44C120.03 86.34 122.1 84.12 124.24 81.98L150.26 55.96C162.82 43.43 179.81 36.37 197.56 36.37L235.97 36.37L225.43 46.91L206.15 46.91C186.18 46.91 167.05 54.84 152.92 68.95" fill="#2C45C4"/></g></svg>
+        <svg id="brand-word" viewBox="0 0 686.37 82.38"><path class="wm-l" d="M73.13 73.07C81.21 73.07 87.87 66.99 87.87 59.42C87.87 51.92 81.21 45.78 73.13 45.78L9.18 45.78L9.18 73.07L73.13 73.07M9.18 9.25L9.18 36.6L73.13 36.6C81.21 36.6 87.87 30.46 87.87 22.95C87.87 15.39 81.21 9.25 73.13 9.25L9.18 9.25M73.13 82.25L0.0 82.25L0.0 0.07L73.13 0.07C86.32 0.07 97.05 10.35 97.05 22.95C97.05 30.39 93.17 36.99 87.35 41.19C93.17 45.33 97.05 51.92 97.05 59.42C97.05 72.03 86.32 82.25 73.13 82.25" fill="#F9FAFB"/><path class="wm-l" d="M280.08 52.12L261.78 9.18L248.65 9.18L231.39 49.53C248.01 52.18 264.43 53.73 280.08 52.12M304.39 54.25C300.51 55.61 296.5 56.64 292.43 57.55L303.16 82.38L293.2 82.38L283.12 59.1C277.75 59.81 272.25 60.2 266.69 60.2C254.15 60.2 241.28 58.58 228.41 56.45L217.23 82.38L207.27 82.38C207.27 82.38 219.1 54.9 219.1 54.9C209.61 52.0 168.65 45.78 151.09 44.76C149.06 44.64 127.16 43.87 127.16 45.07L127.16 73.32L196.54 73.32L196.54 82.38L117.98 82.38L117.98 46.56C115.26 47.14 112.55 47.72 109.9 48.56L107.7 41.51C111.06 40.48 114.49 39.64 117.98 38.99L117.98 0.07L196.54 0.07L196.54 9.38L127.16 9.38L127.16 37.7C150.96 35.24 180.76 40.09 205.65 44.87C211.15 45.91 216.58 46.94 222.08 47.98L242.64 0.0L267.79 0.0L289.52 50.69C293.72 49.85 297.86 48.75 301.93 47.33L304.39 54.25" fill="#F9FAFB"/><path class="wm-l" d="M324.21 82.38L315.03 82.38L315.03 0.0L324.21 0.0L324.21 36.6L339.02 36.6L387.01 0.0L402.14 0.0L348.07 41.19L402.14 82.38L387.01 82.38L338.96 45.78L324.21 45.78L324.21 82.38" fill="#F9FAFB"/><path class="wm-l" d="M490.82 82.38L412.26 82.38L412.26 0.0L421.44 0.0L421.44 73.2L490.82 73.2L490.82 82.38" fill="#F9FAFB"/><path class="wm-l" d="M580.02 82.38L501.46 82.38L501.46 0.0L580.02 0.0L580.02 9.18L510.65 9.18L510.65 36.6L571.17 36.6L571.17 45.78L510.65 45.78L510.65 73.2L580.02 73.2L580.02 82.38" fill="#F9FAFB"/><path class="wm-l" d="M633.93 9.25L590.67 9.25L590.67 0.06L686.37 0.06L686.37 9.25L643.11 9.25L643.11 82.38L633.93 82.38L633.93 9.25" fill="#F9FAFB"/></svg>
+        <div class="center-col" style="top: 960px">
+          <div class="mono" id="end-meta">Collectible writing instruments</div>
+          <span id="end-tag" class="serif ink" style="display: block; font-size: 130px; margin-top: 60px">Write again.</span>
+          <svg id="end-underline" viewBox="0 0 640 60" style="display: block; width: 560px; height: 52px; margin-top: 2px">
+            <path id="ul2" d="M8 34 C 120 18, 240 46, 360 30 S 560 20, 632 28" fill="none" stroke="#e0a82e" stroke-width="5" stroke-linecap="round" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- ================= FINISHING ================= -->
+      <div
+        id="leak1"
+        data-composition-id="organic-light-leak-overlay"
+        data-composition-src="compositions/organic-light-leak-overlay.html"
+        data-start="12"
+        data-duration="4"
+        data-track-index="17"
+        data-width="1080"
+        data-height="1920"
+        style="position: absolute; inset: 0; z-index: 80; pointer-events: none; opacity: 0.4"
+      ></div>
+      <div id="flash" data-layout-allow-occlusion></div>
+      <div id="hf-vignette" data-layout-allow-occlusion></div>
+      <div id="grain" data-layout-allow-occlusion data-layout-allow-overflow><div class="tex" data-layout-allow-overflow></div></div>
+      <img id="watermark" src="assets/img/sd-watermark.png" alt="" />
+
+      <!-- ================= AUDIO ================= -->
+      <audio id="bgm" src="assets/audio/bgm-prologue.mp3" data-start="0" data-duration="40.6" data-media-start="1.07" data-track-index="20" data-volume="1" data-automation='{"version":1,"lanes":[{"target":"volume","points":[{"t":0,"v":0},{"t":1.2,"v":0.88},{"t":27.65,"v":0.88},{"t":27.8,"v":0.59},{"t":28.85,"v":0.59},{"t":29.05,"v":0.88},{"t":40.0,"v":0.88},{"t":40.55,"v":0}]},{"target":"fx.n1.gain","points":[{"t":0,"v":0},{"t":1.016,"v":0},{"t":1.124,"v":-0.6},{"t":1.232,"v":-5},{"t":1.34,"v":-3.3},{"t":1.448,"v":-2.1},{"t":1.556,"v":-1.4},{"t":1.665,"v":-0.9},{"t":1.773,"v":-2.1},{"t":1.881,"v":-1.7},{"t":1.989,"v":-1.1},{"t":2.097,"v":-0.7},{"t":2.205,"v":-0.5},{"t":2.421,"v":-0.2},{"t":2.53,"v":0},{"t":2.854,"v":0},{"t":2.962,"v":-4.1},{"t":3.178,"v":-3.8},{"t":3.286,"v":-5.3},{"t":3.395,"v":-4.6},{"t":3.503,"v":-3},{"t":3.611,"v":-2.2},{"t":3.719,"v":-1.4},{"t":3.827,"v":-0.9},{"t":3.935,"v":-0.6},{"t":4.151,"v":-0.2},{"t":4.26,"v":0},{"t":4.368,"v":0},{"t":4.476,"v":-1.9},{"t":4.584,"v":-2.6},{"t":4.692,"v":-2.4},{"t":4.8,"v":-1.5},{"t":4.908,"v":-1},{"t":5.016,"v":-0.6},{"t":5.125,"v":-0.4},{"t":13.234,"v":-0.4},{"t":13.342,"v":-5},{"t":13.45,"v":-5.2},{"t":13.558,"v":-3.4},{"t":13.666,"v":-2.8},{"t":13.775,"v":-2.7},{"t":13.883,"v":-1.7},{"t":13.991,"v":-1.1},{"t":14.099,"v":-5.7},{"t":14.207,"v":-5.6},{"t":14.315,"v":-3.6},{"t":14.423,"v":-2.4},{"t":14.531,"v":-4.3},{"t":14.64,"v":-4.6},{"t":14.748,"v":-3.5},{"t":14.856,"v":-2.8},{"t":14.964,"v":-1.8},{"t":15.072,"v":-1.2},{"t":15.18,"v":-3.3},{"t":15.288,"v":-3.9},{"t":15.396,"v":-3.3},{"t":15.505,"v":-4.7},{"t":15.613,"v":-3.5},{"t":15.721,"v":-2.3},{"t":15.829,"v":-3.6},{"t":15.937,"v":-2.3},{"t":16.045,"v":-3.8},{"t":16.153,"v":-3.3},{"t":16.261,"v":-2.1},{"t":16.37,"v":-1.4},{"t":16.694,"v":-0.9},{"t":16.802,"v":-0.6},{"t":17.018,"v":-0.3},{"t":17.126,"v":0},{"t":24.479,"v":0},{"t":24.587,"v":-2.9},{"t":24.695,"v":-2.4},{"t":24.803,"v":-1.6},{"t":24.911,"v":-3.6},{"t":25.02,"v":-2.3},{"t":25.128,"v":-1.8},{"t":25.236,"v":-2.9},{"t":25.344,"v":-1.9},{"t":25.452,"v":-1.2},{"t":25.56,"v":-0.8},{"t":25.668,"v":-0.5},{"t":25.885,"v":-0.2},{"t":25.993,"v":0},{"t":26.101,"v":0},{"t":26.209,"v":-1.4},{"t":26.317,"v":-2.9},{"t":26.425,"v":-2},{"t":26.533,"v":-1.3},{"t":26.641,"v":-3.3},{"t":26.75,"v":-2.2},{"t":26.858,"v":-2},{"t":26.966,"v":-1.3},{"t":27.074,"v":-0.9},{"t":27.182,"v":-0.6},{"t":27.398,"v":-0.2},{"t":27.506,"v":0},{"t":27.723,"v":0},{"t":27.831,"v":-5},{"t":27.939,"v":-5},{"t":28.047,"v":-6.2},{"t":28.155,"v":-4.1},{"t":28.263,"v":-6.5},{"t":28.371,"v":-6.3},{"t":28.48,"v":-5.8},{"t":28.588,"v":-6.7},{"t":28.696,"v":-4.3},{"t":28.804,"v":-4.1},{"t":28.912,"v":-3},{"t":29.02,"v":-2.1},{"t":29.128,"v":-1.3},{"t":29.236,"v":-0.9},{"t":29.345,"v":-0.6},{"t":29.453,"v":-3.6},{"t":29.561,"v":-2.3},{"t":29.669,"v":-3.7},{"t":29.777,"v":-2.6},{"t":29.885,"v":-1.7},{"t":29.993,"v":-1.1},{"t":30.318,"v":-0.7},{"t":30.426,"v":-0.5},{"t":30.534,"v":-0.3},{"t":30.642,"v":0},{"t":41.13,"v":0},{"t":41.238,"v":-6.6},{"t":41.346,"v":-4.3},{"t":41.455,"v":-3.7},{"t":41.563,"v":-2.4},{"t":41.671,"v":-1.5},{"t":41.779,"v":-1},{"t":41.887,"v":-0.7},{"t":41.995,"v":-0.4},{"t":42.428,"v":0},{"t":42.536,"v":-3.4},{"t":42.644,"v":-3},{"t":42.752,"v":-2.7},{"t":42.86,"v":-2.4},{"t":42.968,"v":-1.6},{"t":43.076,"v":-1},{"t":43.185,"v":-0.7},{"t":43.247,"v":0}]},{"target":"fx.n2.gain","points":[{"t":0,"v":0},{"t":0.8,"v":0},{"t":0.908,"v":-0.8},{"t":1.124,"v":-0.7},{"t":1.232,"v":-4.4},{"t":1.34,"v":-3.4},{"t":1.448,"v":-4},{"t":1.556,"v":-2.6},{"t":1.665,"v":-3.8},{"t":1.773,"v":-3.4},{"t":1.881,"v":-3.1},{"t":1.989,"v":-2},{"t":2.097,"v":-1.3},{"t":2.205,"v":-0.8},{"t":2.421,"v":-0.4},{"t":2.53,"v":-0.2},{"t":2.854,"v":0},{"t":2.962,"v":-4.4},{"t":3.07,"v":-3.3},{"t":3.178,"v":-2.3},{"t":3.286,"v":-1.6},{"t":3.719,"v":-1.2},{"t":3.827,"v":-0.8},{"t":3.935,"v":-0.5},{"t":4.043,"v":-0.3},{"t":4.476,"v":-0.5},{"t":4.584,"v":-2.5},{"t":4.692,"v":-2.7},{"t":4.8,"v":-1.7},{"t":4.908,"v":-1.1},{"t":5.016,"v":-0.7},{"t":5.125,"v":-0.5},{"t":5.233,"v":-0.3},{"t":5.341,"v":0},{"t":13.018,"v":0},{"t":13.126,"v":-1.8},{"t":13.234,"v":-1.7},{"t":13.342,"v":-5.4},{"t":13.45,"v":-5.3},{"t":13.558,"v":-3.5},{"t":13.666,"v":-2.2},{"t":13.775,"v":-2},{"t":13.883,"v":-1.3},{"t":13.991,"v":-0.8},{"t":14.099,"v":-6.2},{"t":14.207,"v":-5.3},{"t":14.315,"v":-3.4},{"t":14.423,"v":-2.2},{"t":14.531,"v":-3.2},{"t":14.64,"v":-2.4},{"t":14.748,"v":-3.6},{"t":14.856,"v":-3.2},{"t":14.964,"v":-2.1},{"t":15.072,"v":-1.3},{"t":15.18,"v":-3.8},{"t":15.288,"v":-2.6},{"t":15.396,"v":-2.3},{"t":15.505,"v":-4.7},{"t":15.613,"v":-3},{"t":15.721,"v":-3.7},{"t":15.829,"v":-3.9},{"t":15.937,"v":-2.5},{"t":16.045,"v":-1.6},{"t":16.153,"v":-1.1},{"t":16.261,"v":-0.7},{"t":16.37,"v":-3.4},{"t":16.478,"v":-2.8},{"t":16.586,"v":-3.5},{"t":16.694,"v":-2.9},{"t":16.802,"v":-1.9},{"t":16.91,"v":-1.2},{"t":17.018,"v":-0.8},{"t":17.126,"v":-0.5},{"t":17.343,"v":-0.2},{"t":17.451,"v":0},{"t":24.479,"v":0},{"t":24.587,"v":-3.5},{"t":24.695,"v":-2.8},{"t":24.803,"v":-2.5},{"t":24.911,"v":-1.9},{"t":25.02,"v":-1.2},{"t":25.128,"v":-4.4},{"t":25.236,"v":-3},{"t":25.344,"v":-1.9},{"t":25.452,"v":-1.3},{"t":25.56,"v":-0.8},{"t":25.668,"v":-0.5},{"t":25.776,"v":-0.3},{"t":26.101,"v":0},{"t":26.209,"v":-3.5},{"t":26.317,"v":-2.8},{"t":26.425,"v":-1.8},{"t":26.533,"v":-1.6},{"t":26.641,"v":-5.3},{"t":26.75,"v":-3.4},{"t":26.858,"v":-3.9},{"t":26.966,"v":-2.5},{"t":27.074,"v":-1.6},{"t":27.182,"v":-1.1},{"t":27.29,"v":-0.7},{"t":27.398,"v":-0.4},{"t":27.723,"v":0},{"t":27.831,"v":-5.4},{"t":27.939,"v":-4.8},{"t":28.047,"v":-4.3},{"t":28.155,"v":-2.8},{"t":28.263,"v":-6.9},{"t":28.371,"v":-6.2},{"t":28.48,"v":-4.9},{"t":28.588,"v":-4.5},{"t":28.696,"v":-2.9},{"t":28.804,"v":-2.6},{"t":28.912,"v":-2.1},{"t":29.02,"v":-1.9},{"t":29.128,"v":-1.3},{"t":29.236,"v":-0.8},{"t":29.345,"v":-0.5},{"t":29.453,"v":-0.3},{"t":29.561,"v":-0.3},{"t":29.669,"v":-0.8},{"t":29.885,"v":-0.5},{"t":29.993,"v":-0.3},{"t":30.101,"v":-1},{"t":30.21,"v":-0.7},{"t":30.318,"v":-0.4},{"t":41.13,"v":0},{"t":41.238,"v":-3.7},{"t":41.346,"v":-2.5},{"t":41.455,"v":-2.4},{"t":41.563,"v":-1.6},{"t":41.671,"v":-1},{"t":41.779,"v":-0.7},{"t":41.887,"v":-0.4},{"t":42.428,"v":0},{"t":42.536,"v":-2.4},{"t":42.644,"v":-4.7},{"t":42.752,"v":-3.4},{"t":42.86,"v":-3.5},{"t":42.968,"v":-2.9},{"t":43.076,"v":-1.9},{"t":43.185,"v":-1.2},{"t":43.247,"v":0}]},{"target":"fx.n3.gain","points":[{"t":0,"v":0},{"t":1.016,"v":0},{"t":1.124,"v":-4.5},{"t":1.232,"v":-5},{"t":1.34,"v":-4.3},{"t":1.448,"v":-6.4},{"t":1.556,"v":-4.2},{"t":1.773,"v":-4.3},{"t":1.881,"v":-2.8},{"t":1.989,"v":-1.8},{"t":2.097,"v":-1.2},{"t":2.205,"v":-0.8},{"t":2.313,"v":-0.5},{"t":2.53,"v":-0.2},{"t":2.638,"v":0},{"t":2.854,"v":0},{"t":2.962,"v":-3},{"t":3.07,"v":-2.1},{"t":3.178,"v":-1.4},{"t":3.286,"v":-0.9},{"t":3.395,"v":-0.6},{"t":3.503,"v":-5.2},{"t":3.611,"v":-5.2},{"t":3.719,"v":-4},{"t":3.827,"v":-2.6},{"t":3.935,"v":-1.7},{"t":4.043,"v":-1.1},{"t":4.151,"v":-0.7},{"t":4.26,"v":-0.5},{"t":4.368,"v":-0.3},{"t":4.476,"v":0},{"t":4.584,"v":-5.7},{"t":4.692,"v":-5.6},{"t":4.8,"v":-3.6},{"t":4.908,"v":-2.3},{"t":5.016,"v":-1.5},{"t":5.125,"v":-1},{"t":5.233,"v":-0.6},{"t":5.341,"v":-0.4},{"t":13.018,"v":0},{"t":13.126,"v":-1.5},{"t":13.234,"v":-4.8},{"t":13.342,"v":-3.8},{"t":13.45,"v":-3.4},{"t":13.558,"v":-2.2},{"t":13.666,"v":-4.4},{"t":13.775,"v":-3.9},{"t":13.883,"v":-2.5},{"t":13.991,"v":-1.7},{"t":14.099,"v":-3},{"t":14.207,"v":-2.1},{"t":14.315,"v":-1.4},{"t":14.423,"v":-0.9},{"t":14.531,"v":-6.5},{"t":14.64,"v":-7.3},{"t":14.748,"v":-6},{"t":14.856,"v":-5.3},{"t":14.964,"v":-3.6},{"t":15.072,"v":-2.3},{"t":15.18,"v":-2.1},{"t":15.288,"v":-1.4},{"t":15.396,"v":-4.6},{"t":15.505,"v":-4.3},{"t":15.613,"v":-2.8},{"t":15.721,"v":-5.7},{"t":15.829,"v":-5.8},{"t":15.937,"v":-3.8},{"t":16.045,"v":-2.4},{"t":16.153,"v":-1.6},{"t":16.261,"v":-2.3},{"t":16.37,"v":-4.4},{"t":16.478,"v":-2.8},{"t":16.694,"v":-2.8},{"t":16.802,"v":-1.8},{"t":16.91,"v":-1.2},{"t":17.018,"v":-0.8},{"t":17.126,"v":-0.5},{"t":17.343,"v":-0.2},{"t":17.451,"v":0},{"t":24.479,"v":0},{"t":24.587,"v":-4.6},{"t":24.695,"v":-3.3},{"t":24.803,"v":-2.4},{"t":24.911,"v":-1.5},{"t":25.02,"v":-1},{"t":25.344,"v":-0.6},{"t":25.452,"v":-0.4},{"t":26.101,"v":0},{"t":26.209,"v":-4.9},{"t":26.317,"v":-3.2},{"t":26.425,"v":-2.1},{"t":26.533,"v":-2.2},{"t":26.641,"v":-5.7},{"t":26.75,"v":-3.7},{"t":26.858,"v":-2.9},{"t":26.966,"v":-1.9},{"t":27.074,"v":-1.2},{"t":27.182,"v":-0.8},{"t":27.29,"v":-0.5},{"t":27.506,"v":-0.2},{"t":27.615,"v":0},{"t":27.723,"v":-1.6},{"t":27.831,"v":-5.3},{"t":27.939,"v":-3.6},{"t":28.047,"v":-2.3},{"t":28.155,"v":-1.5},{"t":28.263,"v":-4.1},{"t":28.371,"v":-4},{"t":28.48,"v":-2.6},{"t":28.588,"v":-1.7},{"t":28.696,"v":-1.1},{"t":28.804,"v":-6.7},{"t":28.912,"v":-5.7},{"t":29.02,"v":-4.2},{"t":29.128,"v":-2.7},{"t":29.236,"v":-1.8},{"t":29.345,"v":-1.1},{"t":29.453,"v":-0.7},{"t":29.561,"v":-2.5},{"t":29.669,"v":-1.6},{"t":29.777,"v":-1.1},{"t":29.885,"v":-0.7},{"t":29.993,"v":-1.7},{"t":30.101,"v":-3.2},{"t":30.21,"v":-2.1},{"t":30.318,"v":-1.4},{"t":30.426,"v":-0.9},{"t":30.534,"v":-0.6},{"t":30.75,"v":-0.2},{"t":30.858,"v":0},{"t":41.238,"v":0},{"t":41.346,"v":-1.7},{"t":41.455,"v":-2.6},{"t":41.563,"v":-1.7},{"t":41.671,"v":-1.1},{"t":41.779,"v":-0.7},{"t":41.887,"v":-0.5},{"t":41.995,"v":-0.3},{"t":42.103,"v":0},{"t":42.428,"v":0},{"t":42.536,"v":-5.6},{"t":42.644,"v":-4.3},{"t":42.752,"v":-2.8},{"t":42.86,"v":-5.1},{"t":42.968,"v":-4.7},{"t":43.076,"v":-3.1},{"t":43.185,"v":-2},{"t":43.247,"v":0}]},{"target":"fx.n4.gain","points":[{"t":0,"v":0},{"t":1.016,"v":0},{"t":1.124,"v":-3.9},{"t":1.232,"v":-3.2},{"t":1.34,"v":-3.1},{"t":1.448,"v":-4.3},{"t":1.556,"v":-2.8},{"t":1.665,"v":-2.2},{"t":1.773,"v":-1.9},{"t":1.881,"v":-1.2},{"t":1.989,"v":-0.8},{"t":2.097,"v":-0.5},{"t":2.313,"v":-0.2},{"t":2.421,"v":0},{"t":2.854,"v":0},{"t":2.962,"v":-2.5},{"t":3.07,"v":-1.6},{"t":3.178,"v":-1.1},{"t":3.395,"v":-0.8},{"t":3.503,"v":-3.8},{"t":3.611,"v":-3.8},{"t":3.719,"v":-3},{"t":3.827,"v":-2},{"t":3.935,"v":-1.3},{"t":4.043,"v":-0.8},{"t":4.151,"v":-0.5},{"t":4.26,"v":-0.3},{"t":4.476,"v":0},{"t":4.584,"v":-5.2},{"t":4.692,"v":-4.5},{"t":4.8,"v":-2.9},{"t":4.908,"v":-1.9},{"t":5.016,"v":-1.2},{"t":5.125,"v":-0.8},{"t":5.233,"v":-0.5},{"t":5.449,"v":-0.2},{"t":5.557,"v":0},{"t":13.018,"v":0},{"t":13.126,"v":-3},{"t":13.234,"v":-5.6},{"t":13.342,"v":-3.9},{"t":13.45,"v":-3.1},{"t":13.558,"v":-2},{"t":13.775,"v":-1.7},{"t":13.883,"v":-1.1},{"t":13.991,"v":-0.7},{"t":14.099,"v":-2.7},{"t":14.207,"v":-1.7},{"t":14.423,"v":-1.4},{"t":14.531,"v":-3.7},{"t":14.64,"v":-5.1},{"t":14.748,"v":-5.8},{"t":14.856,"v":-4.8},{"t":14.964,"v":-3.1},{"t":15.072,"v":-2},{"t":15.18,"v":-1.7},{"t":15.288,"v":-1.1},{"t":15.396,"v":-5},{"t":15.505,"v":-4.4},{"t":15.613,"v":-2.9},{"t":15.721,"v":-5.4},{"t":15.829,"v":-5.3},{"t":15.937,"v":-3.5},{"t":16.045,"v":-2.2},{"t":16.153,"v":-1.5},{"t":16.261,"v":-4.1},{"t":16.37,"v":-5.4},{"t":16.478,"v":-3.5},{"t":16.586,"v":-2.7},{"t":16.694,"v":-3.6},{"t":16.802,"v":-2.4},{"t":16.91,"v":-1.5},{"t":17.018,"v":-1},{"t":17.126,"v":-0.6},{"t":17.235,"v":-0.4},{"t":24.479,"v":0},{"t":24.587,"v":-1.9},{"t":24.695,"v":-2.6},{"t":24.803,"v":-3},{"t":24.911,"v":-1.9},{"t":25.02,"v":-1.6},{"t":25.128,"v":-1.2},{"t":25.236,"v":-0.8},{"t":25.344,"v":-0.5},{"t":25.56,"v":-0.2},{"t":25.668,"v":0},{"t":26.101,"v":0},{"t":26.209,"v":-3.3},{"t":26.317,"v":-3.8},{"t":26.425,"v":-2.5},{"t":26.533,"v":-4.4},{"t":26.641,"v":-3.9},{"t":26.75,"v":-2.5},{"t":26.858,"v":-2.1},{"t":26.966,"v":-1.4},{"t":27.074,"v":-0.9},{"t":27.182,"v":-0.6},{"t":27.398,"v":-0.3},{"t":27.506,"v":0},{"t":27.723,"v":0},{"t":27.831,"v":-3.8},{"t":27.939,"v":-3.7},{"t":28.047,"v":-2.4},{"t":28.155,"v":-1.8},{"t":28.263,"v":-6.1},{"t":28.371,"v":-6.2},{"t":28.48,"v":-4},{"t":28.588,"v":-2.7},{"t":28.696,"v":-1.9},{"t":28.804,"v":-6.8},{"t":28.912,"v":-5.5},{"t":29.02,"v":-3.6},{"t":29.128,"v":-2.3},{"t":29.236,"v":-1.5},{"t":29.345,"v":-1},{"t":29.453,"v":-0.6},{"t":29.561,"v":-2.5},{"t":29.669,"v":-1.8},{"t":29.777,"v":-1.2},{"t":30.21,"v":-0.9},{"t":30.318,"v":-0.6},{"t":30.534,"v":-0.2},{"t":30.642,"v":0},{"t":41.022,"v":0},{"t":41.13,"v":-0.8},{"t":41.238,"v":-0.6},{"t":41.346,"v":-3.6},{"t":41.455,"v":-3.4},{"t":41.563,"v":-2.2},{"t":41.671,"v":-1.4},{"t":41.779,"v":-0.9},{"t":41.887,"v":-0.6},{"t":42.103,"v":-0.3},{"t":42.211,"v":0},{"t":42.428,"v":0},{"t":42.536,"v":-3.9},{"t":42.644,"v":-2.9},{"t":42.752,"v":-1.9},{"t":42.968,"v":-1.7},{"t":43.076,"v":-1.1},{"t":43.185,"v":-0.7},{"t":43.247,"v":0}]},{"target":"fx.n5.gain","points":[{"t":0,"v":0},{"t":1.016,"v":0},{"t":1.124,"v":-7.5},{"t":1.232,"v":-8.1},{"t":1.34,"v":-6.7},{"t":1.448,"v":-4.3},{"t":1.556,"v":-2.8},{"t":1.665,"v":-7.9},{"t":1.773,"v":-7.2},{"t":1.881,"v":-4.6},{"t":1.989,"v":-3},{"t":2.097,"v":-2},{"t":2.205,"v":-1.3},{"t":2.313,"v":-0.8},{"t":2.421,"v":-0.5},{"t":2.53,"v":-0.3},{"t":2.854,"v":0},{"t":2.962,"v":-7.7},{"t":3.07,"v":-5.8},{"t":3.178,"v":-3.7},{"t":3.286,"v":-3.6},{"t":3.395,"v":-2.3},{"t":3.503,"v":-8.3},{"t":3.611,"v":-11},{"t":3.719,"v":-10.3},{"t":3.827,"v":-6.7},{"t":3.935,"v":-4.3},{"t":4.043,"v":-2.8},{"t":4.151,"v":-1.8},{"t":4.26,"v":-1.2},{"t":4.368,"v":-0.8},{"t":4.476,"v":-0.5},{"t":4.584,"v":-7},{"t":4.692,"v":-7.3},{"t":4.8,"v":-4.7},{"t":4.908,"v":-3.2},{"t":5.016,"v":-2.1},{"t":5.125,"v":-1.3},{"t":5.233,"v":-0.9},{"t":5.341,"v":-0.6},{"t":5.557,"v":-0.2},{"t":5.665,"v":0},{"t":13.018,"v":0},{"t":13.126,"v":-10.2},{"t":13.234,"v":-8.5},{"t":13.342,"v":-6.9},{"t":13.45,"v":-6.5},{"t":13.558,"v":-4.2},{"t":13.666,"v":-7.1},{"t":13.775,"v":-6.6},{"t":13.883,"v":-4.8},{"t":13.991,"v":-4.1},{"t":14.099,"v":-10.9},{"t":14.207,"v":-7.5},{"t":14.315,"v":-9.5},{"t":14.423,"v":-11.2},{"t":14.531,"v":-12},{"t":14.64,"v":-11.6},{"t":14.748,"v":-8.1},{"t":14.856,"v":-7.2},{"t":14.964,"v":-7.4},{"t":15.072,"v":-4.8},{"t":15.18,"v":-3.8},{"t":15.288,"v":-2.5},{"t":15.396,"v":-8.7},{"t":15.505,"v":-5.7},{"t":15.613,"v":-3.7},{"t":15.721,"v":-2.4},{"t":15.829,"v":-8.6},{"t":15.937,"v":-7.7},{"t":16.045,"v":-5},{"t":16.153,"v":-3.9},{"t":16.261,"v":-2.5},{"t":16.37,"v":-4.5},{"t":16.478,"v":-2.9},{"t":16.586,"v":-8.7},{"t":16.694,"v":-5.7},{"t":16.802,"v":-3.7},{"t":16.91,"v":-2.4},{"t":17.018,"v":-1.5},{"t":17.126,"v":-1},{"t":17.235,"v":-0.7},{"t":17.343,"v":-0.4},{"t":24.479,"v":0},{"t":24.587,"v":-7.8},{"t":24.695,"v":-6.4},{"t":24.803,"v":-6.4},{"t":24.911,"v":-5.2},{"t":25.02,"v":-5.8},{"t":25.128,"v":-5.4},{"t":25.236,"v":-3.5},{"t":25.344,"v":-2.3},{"t":25.452,"v":-1.5},{"t":25.56,"v":-1},{"t":25.668,"v":-0.6},{"t":25.776,"v":-0.4},{"t":26.101,"v":0},{"t":26.209,"v":-11.3},{"t":26.317,"v":-8.8},{"t":26.425,"v":-5.7},{"t":26.533,"v":-12.6},{"t":26.641,"v":-8.2},{"t":26.75,"v":-6.7},{"t":26.858,"v":-10.1},{"t":26.966,"v":-9.8},{"t":27.074,"v":-6.4},{"t":27.182,"v":-4.1},{"t":27.29,"v":-2.7},{"t":27.398,"v":-1.7},{"t":27.506,"v":-1.1},{"t":27.615,"v":-0.7},{"t":27.723,"v":-3.3},{"t":27.831,"v":-13.5},{"t":27.939,"v":-10.6},{"t":28.047,"v":-7.4},{"t":28.155,"v":-7.4},{"t":28.263,"v":-6.8},{"t":28.371,"v":-7.5},{"t":28.48,"v":-4.9},{"t":28.588,"v":-3.5},{"t":28.696,"v":-4.2},{"t":28.804,"v":-4.4},{"t":28.912,"v":-7.2},{"t":29.02,"v":-4.7},{"t":29.128,"v":-3.6},{"t":29.236,"v":-2.4},{"t":29.345,"v":-1.5},{"t":29.453,"v":-1},{"t":29.561,"v":-10.5},{"t":29.669,"v":-6.8},{"t":29.777,"v":-6.4},{"t":29.885,"v":-4.1},{"t":29.993,"v":-6.1},{"t":30.101,"v":-7.3},{"t":30.21,"v":-4.8},{"t":30.318,"v":-3.1},{"t":30.426,"v":-2},{"t":30.534,"v":-1.3},{"t":30.642,"v":-0.8},{"t":30.858,"v":-0.4},{"t":30.966,"v":-0.2},{"t":41.022,"v":0},{"t":41.13,"v":-3.3},{"t":41.238,"v":-2.2},{"t":41.346,"v":-9.9},{"t":41.455,"v":-7.8},{"t":41.563,"v":-5.1},{"t":41.671,"v":-3.3},{"t":41.779,"v":-2.1},{"t":41.887,"v":-1.4},{"t":41.995,"v":-0.9},{"t":42.103,"v":-0.6},{"t":42.32,"v":-0.2},{"t":42.428,"v":0},{"t":42.536,"v":-8},{"t":42.644,"v":-6.7},{"t":42.752,"v":-4.4},{"t":42.86,"v":-3.8},{"t":42.968,"v":-7},{"t":43.076,"v":-4.6},{"t":43.185,"v":-3},{"t":43.247,"v":0}]},{"target":"fx.n6.gain","points":[{"t":0,"v":0},{"t":0.8,"v":0},{"t":0.908,"v":-4.7},{"t":1.016,"v":-3.5},{"t":1.124,"v":-4.2},{"t":1.232,"v":-5.1},{"t":1.34,"v":-4.4},{"t":1.448,"v":-3.1},{"t":1.556,"v":-2},{"t":1.665,"v":-4},{"t":1.773,"v":-4.7},{"t":1.881,"v":-4.3},{"t":1.989,"v":-2.8},{"t":2.097,"v":-1.8},{"t":2.205,"v":-1.2},{"t":2.313,"v":-0.8},{"t":2.421,"v":-0.5},{"t":2.638,"v":-0.2},{"t":2.746,"v":0},{"t":2.854,"v":0},{"t":2.962,"v":-4.2},{"t":3.07,"v":-3.9},{"t":3.178,"v":-3.1},{"t":3.286,"v":-5.2},{"t":3.395,"v":-3.7},{"t":3.719,"v":-3.3},{"t":3.827,"v":-2.1},{"t":3.935,"v":-1.4},{"t":4.043,"v":-0.9},{"t":4.151,"v":-0.6},{"t":4.368,"v":-0.2},{"t":4.476,"v":0},{"t":4.584,"v":0},{"t":4.692,"v":-4.8},{"t":4.8,"v":-3.8},{"t":4.908,"v":-3.3},{"t":5.016,"v":-2.1},{"t":5.125,"v":-1.4},{"t":5.233,"v":-0.9},{"t":5.341,"v":-0.6},{"t":5.557,"v":-0.2},{"t":5.665,"v":0},{"t":13.018,"v":0},{"t":13.126,"v":-4.4},{"t":13.234,"v":-4.2},{"t":13.342,"v":-5.9},{"t":13.45,"v":-5.3},{"t":13.558,"v":-3.6},{"t":13.666,"v":-4.5},{"t":13.775,"v":-5.1},{"t":13.883,"v":-5},{"t":13.991,"v":-6.2},{"t":14.099,"v":-4},{"t":14.207,"v":-4.4},{"t":14.315,"v":-4.6},{"t":14.423,"v":-5.1},{"t":14.531,"v":-4.2},{"t":14.856,"v":-3.8},{"t":14.964,"v":-2.4},{"t":15.072,"v":-1.6},{"t":15.18,"v":-2.2},{"t":15.288,"v":-2.2},{"t":15.396,"v":-3.1},{"t":15.505,"v":-2.2},{"t":15.613,"v":-1.4},{"t":15.721,"v":-2.4},{"t":15.829,"v":-1.5},{"t":15.937,"v":-3.3},{"t":16.045,"v":-3.9},{"t":16.153,"v":-4.4},{"t":16.261,"v":-3.5},{"t":16.37,"v":-2.3},{"t":16.478,"v":-2.6},{"t":16.586,"v":-3.9},{"t":16.694,"v":-3.1},{"t":16.802,"v":-2},{"t":16.91,"v":-1.3},{"t":17.018,"v":-0.8},{"t":17.235,"v":-0.4},{"t":17.343,"v":-0.2},{"t":24.479,"v":0},{"t":24.587,"v":-4.8},{"t":24.695,"v":-4.2},{"t":24.803,"v":-3.1},{"t":24.911,"v":-4.4},{"t":25.02,"v":-4.2},{"t":25.128,"v":-3.8},{"t":25.344,"v":-3.5},{"t":25.452,"v":-2.3},{"t":25.56,"v":-1.5},{"t":25.668,"v":-1},{"t":25.776,"v":-0.6},{"t":25.885,"v":-0.4},{"t":26.101,"v":0},{"t":26.209,"v":-3.7},{"t":26.317,"v":-3.4},{"t":26.425,"v":-2.8},{"t":26.533,"v":-3.7},{"t":26.641,"v":-3.2},{"t":26.75,"v":-6.9},{"t":26.858,"v":-5.2},{"t":26.966,"v":-3.4},{"t":27.074,"v":-2.2},{"t":27.182,"v":-1.4},{"t":27.29,"v":-0.9},{"t":27.398,"v":-0.6},{"t":27.615,"v":-0.3},{"t":27.723,"v":-2.8},{"t":27.831,"v":-4.6},{"t":28.047,"v":-5},{"t":28.155,"v":-5.1},{"t":28.263,"v":-4.6},{"t":28.371,"v":-3},{"t":28.48,"v":-4.9},{"t":28.588,"v":-7},{"t":28.696,"v":-6},{"t":28.804,"v":-4.6},{"t":28.912,"v":-3.6},{"t":29.02,"v":-3.5},{"t":29.128,"v":-2.9},{"t":29.236,"v":-1.9},{"t":29.345,"v":-1.2},{"t":29.453,"v":-4.6},{"t":29.561,"v":-4.5},{"t":29.669,"v":-3.5},{"t":29.777,"v":-3.6},{"t":29.885,"v":-2.4},{"t":29.993,"v":-4.4},{"t":30.101,"v":-3.8},{"t":30.21,"v":-3.1},{"t":30.318,"v":-2},{"t":30.426,"v":-1.3},{"t":30.534,"v":-0.8},{"t":30.75,"v":-0.4},{"t":30.858,"v":-0.2},{"t":41.022,"v":0},{"t":41.13,"v":-3.4},{"t":41.238,"v":-6.7},{"t":41.346,"v":-5.5},{"t":41.455,"v":-5.1},{"t":41.563,"v":-3.3},{"t":41.671,"v":-2.1},{"t":41.779,"v":-1.4},{"t":41.887,"v":-0.9},{"t":41.995,"v":-0.6},{"t":42.211,"v":-0.2},{"t":42.32,"v":0},{"t":42.428,"v":0},{"t":42.536,"v":-2.8},{"t":42.644,"v":-4.9},{"t":42.752,"v":-4.3},{"t":42.86,"v":-5.6},{"t":42.968,"v":-4.4},{"t":43.076,"v":-3.3},{"t":43.185,"v":-2.1},{"t":43.247,"v":0}]},{"target":"fx.n7.gain","points":[{"t":0,"v":0.0},{"t":0.908,"v":0.0},{"t":1.016,"v":-1.08},{"t":1.34,"v":-0.98},{"t":1.448,"v":-0.91},{"t":1.773,"v":-0.84},{"t":1.881,"v":-1.68},{"t":2.097,"v":-1.54},{"t":2.205,"v":-1.47},{"t":2.421,"v":-1.33},{"t":2.53,"v":-1.29},{"t":2.746,"v":-1.19},{"t":2.854,"v":-3.74},{"t":2.962,"v":-3.57},{"t":3.07,"v":-3.43},{"t":3.178,"v":-3.29},{"t":3.286,"v":-3.15},{"t":3.395,"v":-3.08},{"t":3.503,"v":-3.01},{"t":3.611,"v":-2.91},{"t":3.719,"v":-2.87},{"t":3.827,"v":-2.73},{"t":3.935,"v":-2.62},{"t":4.043,"v":-2.52},{"t":4.151,"v":-2.38},{"t":4.26,"v":-2.27},{"t":4.368,"v":-2.2},{"t":4.476,"v":-5.46},{"t":4.584,"v":-5.28},{"t":4.692,"v":-5.11},{"t":4.8,"v":-6.54},{"t":5.016,"v":-6.41},{"t":5.125,"v":-6.12},{"t":5.233,"v":-5.84},{"t":5.341,"v":-5.6},{"t":5.449,"v":-5.35},{"t":5.557,"v":-5.11},{"t":5.665,"v":-4.9},{"t":5.773,"v":-4.66},{"t":5.881,"v":-4.48},{"t":5.99,"v":-4.27},{"t":6.098,"v":-4.09},{"t":6.206,"v":-3.88},{"t":6.314,"v":-3.74},{"t":6.422,"v":-3.57},{"t":6.53,"v":-3.39},{"t":6.638,"v":-3.25},{"t":6.746,"v":-3.11},{"t":6.855,"v":-2.97},{"t":6.963,"v":-2.83},{"t":7.071,"v":-2.73},{"t":7.179,"v":-2.59},{"t":7.287,"v":-2.48},{"t":7.395,"v":-2.38},{"t":7.503,"v":-2.27},{"t":7.611,"v":-2.17},{"t":7.72,"v":-2.06},{"t":7.828,"v":-1.99},{"t":7.936,"v":-1.89},{"t":8.044,"v":-1.82},{"t":8.152,"v":-1.75},{"t":8.26,"v":-1.65},{"t":8.476,"v":-1.5},{"t":8.585,"v":-1.43},{"t":8.909,"v":-1.26},{"t":9.017,"v":-1.22},{"t":9.233,"v":-1.12},{"t":9.341,"v":-1.05},{"t":9.666,"v":-0.91},{"t":9.774,"v":-0.88},{"t":10.206,"v":-0.73},{"t":10.315,"v":-0.7},{"t":10.855,"v":-0.56},{"t":10.963,"v":-0.52},{"t":11.828,"v":-0.39},{"t":11.936,"v":-0.35},{"t":13.018,"v":-0.24},{"t":13.126,"v":-5.95},{"t":13.342,"v":-5.81},{"t":13.45,"v":-5.74},{"t":13.558,"v":-6.61},{"t":14.964,"v":-6.72},{"t":15.072,"v":-6.44},{"t":15.18,"v":-6.69},{"t":15.721,"v":-6.58},{"t":15.829,"v":-6.47},{"t":15.937,"v":-6.69},{"t":16.694,"v":-6.72},{"t":16.802,"v":-6.44},{"t":16.91,"v":-6.12},{"t":17.018,"v":-5.88},{"t":17.126,"v":-5.6},{"t":17.235,"v":-5.35},{"t":17.343,"v":-5.14},{"t":17.451,"v":-4.9},{"t":17.559,"v":-4.69},{"t":17.667,"v":-4.48},{"t":17.775,"v":-4.27},{"t":17.883,"v":-4.09},{"t":17.991,"v":-3.92},{"t":18.1,"v":-3.74},{"t":18.208,"v":-3.57},{"t":18.316,"v":-3.43},{"t":18.424,"v":-3.25},{"t":18.532,"v":-3.11},{"t":18.64,"v":-2.97},{"t":18.748,"v":-2.87},{"t":18.856,"v":-2.73},{"t":18.965,"v":-2.62},{"t":19.073,"v":-2.48},{"t":19.181,"v":-2.38},{"t":19.289,"v":-2.27},{"t":19.397,"v":-2.17},{"t":19.505,"v":-2.1},{"t":19.613,"v":-1.99},{"t":19.721,"v":-1.89},{"t":19.938,"v":-1.75},{"t":20.046,"v":-1.68},{"t":20.154,"v":-1.57},{"t":20.262,"v":-1.5},{"t":20.478,"v":-1.4},{"t":20.586,"v":-1.33},{"t":20.803,"v":-1.22},{"t":20.911,"v":-1.15},{"t":21.235,"v":-1.01},{"t":21.343,"v":-0.98},{"t":21.668,"v":-0.84},{"t":21.776,"v":-0.8},{"t":22.425,"v":-0.63},{"t":22.533,"v":-0.59},{"t":23.181,"v":-0.45},{"t":23.29,"v":-0.42},{"t":24.371,"v":-0.28},{"t":24.479,"v":-0.24},{"t":24.587,"v":-5.99},{"t":24.695,"v":-6.65},{"t":25.236,"v":-6.72},{"t":25.344,"v":-6.44},{"t":25.452,"v":-6.12},{"t":25.56,"v":-5.88},{"t":25.668,"v":-5.6},{"t":25.776,"v":-5.35},{"t":25.885,"v":-5.14},{"t":25.993,"v":-4.9},{"t":26.101,"v":-6.51},{"t":26.209,"v":-6.47},{"t":26.317,"v":-6.69},{"t":26.966,"v":-6.72},{"t":27.074,"v":-6.44},{"t":27.182,"v":-6.12},{"t":27.29,"v":-5.88},{"t":27.398,"v":-5.6},{"t":27.506,"v":-5.35},{"t":27.615,"v":-5.14},{"t":27.723,"v":-6.54},{"t":28.047,"v":-6.65},{"t":28.155,"v":-6.72},{"t":28.48,"v":-6.61},{"t":28.588,"v":-6.54},{"t":28.804,"v":-6.61},{"t":28.912,"v":-6.72},{"t":29.128,"v":-6.72},{"t":29.236,"v":-6.44},{"t":29.345,"v":-6.12},{"t":29.453,"v":-6.65},{"t":30.21,"v":-6.72},{"t":30.318,"v":-6.44},{"t":30.426,"v":-6.12},{"t":30.534,"v":-5.88},{"t":30.642,"v":-5.6},{"t":30.75,"v":-5.35},{"t":30.858,"v":-5.14},{"t":30.966,"v":-4.9},{"t":31.075,"v":-4.69},{"t":31.183,"v":-4.48},{"t":31.291,"v":-4.27},{"t":31.399,"v":-4.09},{"t":31.507,"v":-3.92},{"t":31.615,"v":-3.74},{"t":31.723,"v":-3.57},{"t":31.831,"v":-3.43},{"t":31.94,"v":-3.25},{"t":32.048,"v":-3.11},{"t":32.156,"v":-2.97},{"t":32.264,"v":-2.87},{"t":32.372,"v":-2.73},{"t":32.48,"v":-2.62},{"t":32.588,"v":-2.48},{"t":32.696,"v":-2.38},{"t":32.805,"v":-2.27},{"t":32.913,"v":-2.17},{"t":33.021,"v":-2.1},{"t":33.129,"v":-1.99},{"t":33.237,"v":-1.89},{"t":33.453,"v":-1.75},{"t":33.561,"v":-1.68},{"t":33.67,"v":-1.57},{"t":33.778,"v":-1.5},{"t":33.994,"v":-1.4},{"t":34.102,"v":-1.33},{"t":34.318,"v":-1.22},{"t":34.426,"v":-1.15},{"t":34.751,"v":-1.01},{"t":34.859,"v":-0.98},{"t":35.183,"v":-0.84},{"t":35.291,"v":-0.8},{"t":35.94,"v":-0.63},{"t":36.048,"v":-0.59},{"t":36.697,"v":-0.45},{"t":36.805,"v":-0.42},{"t":37.886,"v":-0.28},{"t":37.995,"v":-0.24},{"t":41.022,"v":-0.07},{"t":41.13,"v":-5.95},{"t":41.238,"v":-6.41},{"t":41.346,"v":-6.69},{"t":41.563,"v":-6.72},{"t":41.671,"v":-6.44},{"t":41.779,"v":-6.12},{"t":41.887,"v":-5.88},{"t":41.995,"v":-5.6},{"t":42.103,"v":-5.35},{"t":42.211,"v":-5.14},{"t":42.32,"v":-4.9},{"t":42.428,"v":-6.51},{"t":42.536,"v":-6.69},{"t":43.076,"v":-6.72},{"t":43.185,"v":-6.44},{"t":43.293,"v":-6.12},{"t":43.401,"v":-5.88},{"t":43.509,"v":-5.6},{"t":43.617,"v":-5.35},{"t":43.725,"v":-5.14},{"t":43.833,"v":-4.9},{"t":43.941,"v":-4.69},{"t":44.05,"v":-4.48},{"t":44.158,"v":-4.27},{"t":44.266,"v":-4.09},{"t":44.374,"v":-3.92},{"t":44.482,"v":-3.74},{"t":44.59,"v":-3.57},{"t":44.698,"v":-3.43},{"t":44.806,"v":-3.25},{"t":44.915,"v":-3.11},{"t":45.023,"v":-2.97},{"t":45.131,"v":-2.87},{"t":45.239,"v":-2.73},{"t":45.347,"v":-2.62},{"t":45.455,"v":-2.48},{"t":45.563,"v":-2.38},{"t":45.671,"v":-2.27},{"t":45.78,"v":-2.17},{"t":45.888,"v":-2.1},{"t":45.996,"v":-1.99},{"t":46.104,"v":-1.89},{"t":46.32,"v":-1.75},{"t":46.428,"v":-1.68},{"t":46.536,"v":-1.57},{"t":46.645,"v":-1.5},{"t":46.861,"v":-1.4},{"t":46.969,"v":-1.33},{"t":47.185,"v":-1.22},{"t":47.293,"v":-1.15},{"t":47.618,"v":-1.01},{"t":47.726,"v":-0.98},{"t":48.05,"v":-0.84},{"t":48.158,"v":-0.8},{"t":48.807,"v":-0.63},{"t":48.915,"v":-0.59},{"t":49.564,"v":-0.45},{"t":49.672,"v":-0.42},{"t":50.753,"v":-0.28},{"t":50.861,"v":-0.24},{"t":53.997,"v":-0.07},{"t":54.105,"v":0.0}]}]}' data-fx-carve="{&quot;enabled&quot;:true,&quot;sources&quot;:[&quot;vo1&quot;,&quot;vo2&quot;,&quot;vo3&quot;,&quot;vo4&quot;],&quot;strength&quot;:0.8}" data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;peaking&quot;,&quot;id&quot;:&quot;n1&quot;,&quot;fromCarve&quot;:true,&quot;params&quot;:{&quot;frequency&quot;:250,&quot;gain&quot;:-7.4,&quot;q&quot;:2.06}},{&quot;type&quot;:&quot;peaking&quot;,&quot;id&quot;:&quot;n2&quot;,&quot;fromCarve&quot;:true,&quot;params&quot;:{&quot;frequency&quot;:400,&quot;gain&quot;:-7.4,&quot;q&quot;:2.06}},{&quot;type&quot;:&quot;peaking&quot;,&quot;id&quot;:&quot;n3&quot;,&quot;fromCarve&quot;:true,&quot;params&quot;:{&quot;frequency&quot;:630,&quot;gain&quot;:-7.4,&quot;q&quot;:2.06}},{&quot;type&quot;:&quot;peaking&quot;,&quot;id&quot;:&quot;n4&quot;,&quot;fromCarve&quot;:true,&quot;params&quot;:{&quot;frequency&quot;:1000,&quot;gain&quot;:-7.4,&quot;q&quot;:2.06}},{&quot;type&quot;:&quot;peaking&quot;,&quot;id&quot;:&quot;n5&quot;,&quot;fromCarve&quot;:true,&quot;params&quot;:{&quot;frequency&quot;:1600,&quot;gain&quot;:-14.8,&quot;q&quot;:2.06}},{&quot;type&quot;:&quot;peaking&quot;,&quot;id&quot;:&quot;n6&quot;,&quot;fromCarve&quot;:true,&quot;params&quot;:{&quot;frequency&quot;:2500,&quot;gain&quot;:-7.4,&quot;q&quot;:2.06}},{&quot;type&quot;:&quot;gain&quot;,&quot;id&quot;:&quot;n7&quot;,&quot;fromCarve&quot;:true,&quot;params&quot;:{&quot;gain&quot;:0}}]}"></audio>
+
+      <audio id="vo1" src="assets/audio/vo1.mp3" data-start="0.8" data-duration="4.28" data-track-index="21" data-volume="1"></audio>
+      <audio id="vo2" src="assets/audio/vo2.mp3" data-start="13" data-duration="3.97" data-track-index="22" data-volume="1"></audio>
+      <audio id="vo3" src="assets/audio/vo3.mp3" data-start="24.5" data-duration="6" data-track-index="23" data-volume="1"></audio>
+      <audio id="vo4" src="assets/audio/vo4.mp3" data-start="41" data-duration="2.24" data-track-index="24" data-volume="1"></audio>
+
+      <!-- SFX bed v5 (user: fewer effects): water drops + section booms + diegetic keys/nib only; levels set against the VO. Water drops: CC0 (Selulance, deleted_user_2104797, paespedro). -->
+      <audio id="sfx-drop-in" src="assets/audio/sfx3/drop-deep.mp3" data-start="0.39" data-duration="0.47" data-track-index="30" data-volume="0.158"></audio><!-- -17 dBFS -->
+      <audio id="k1" src=".media/audio/sfx/sfx_003.mp3" data-start="0.8" data-duration="0.4" data-track-index="33" data-volume="0.119"></audio><!-- -20 dBFS -->
+      <audio id="k2" src=".media/audio/sfx/sfx_003.mp3" data-start="0.95" data-duration="0.4" data-track-index="34" data-volume="0.06"></audio><!-- -26 dBFS -->
+      <audio id="k3" src=".media/audio/sfx/sfx_003.mp3" data-start="1.1" data-duration="0.4" data-track-index="35" data-volume="0.119"></audio><!-- -20 dBFS -->
+      <audio id="k4" src=".media/audio/sfx/sfx_003.mp3" data-start="1.25" data-duration="0.4" data-track-index="36" data-volume="0.06"></audio><!-- -26 dBFS -->
+      <audio id="k5" src=".media/audio/sfx/sfx_003.mp3" data-start="1.4" data-duration="0.4" data-track-index="37" data-volume="0.119"></audio><!-- -20 dBFS -->
+      <audio id="k6" src=".media/audio/sfx/sfx_003.mp3" data-start="1.55" data-duration="0.4" data-track-index="38" data-volume="0.06"></audio><!-- -26 dBFS -->
+      <audio id="k7" src=".media/audio/sfx/sfx_003.mp3" data-start="1.7" data-duration="0.4" data-track-index="39" data-volume="0.119"></audio><!-- -20 dBFS -->
+      <audio id="sfx-ink-drop" src="assets/audio/sfx3/drop-cave.mp3" data-start="4.3" data-duration="1.1" data-track-index="41" data-volume="0.216" data-automation='{"version":1,"lanes":[{"target":"volume","points":[{"t":0,"v":1},{"t":0.75,"v":1},{"t":1.1,"v":0}]}]}'></audio><!-- -14 dBFS -->
+      <audio id="nib1" src=".media/audio/sfx/sfx_004.mp3" data-start="4.46" data-duration="1.1" data-track-index="43" data-volume="0.631" data-automation='{"version":1,"lanes":[{"target":"volume","points":[{"t":0,"v":1},{"t":0.8,"v":1},{"t":1.1,"v":0}]}]}'></audio><!-- -21 dBFS -->
+      <audio id="boom1" src=".media/audio/sfx/sfx_002.mp3" data-start="12.0" data-duration="2.0" data-track-index="50" data-volume="0.292"></audio><!-- -11 dBFS -->
+      <audio id="boom2" src=".media/audio/sfx/sfx_002.mp3" data-start="24.36" data-duration="2.0" data-track-index="55" data-volume="0.232"></audio><!-- -13 dBFS -->
+      <audio id="sfx-pen-drop" src="assets/audio/sfx3/drop-cave.mp3" data-start="29.57" data-duration="2.4" data-track-index="62" data-volume="0.153"></audio><!-- -17 dBFS -->
+      <audio id="boom3" src=".media/audio/sfx/sfx_002.mp3" data-start="36.4" data-duration="2.0" data-track-index="67" data-volume="0.232"></audio><!-- -13 dBFS -->
+      <audio id="boom4" src=".media/audio/sfx/sfx_002.mp3" data-start="40.5" data-duration="2.0" data-track-index="68" data-volume="0.367"></audio><!-- -9 dBFS -->
+      <audio id="nib2" src=".media/audio/sfx/sfx_004.mp3" data-start="42.44" data-duration="1.0" data-track-index="71" data-volume="0.501" data-automation='{"version":1,"lanes":[{"target":"volume","points":[{"t":0,"v":1},{"t":0.7,"v":1},{"t":1.0,"v":0}]}]}'></audio><!-- -23 dBFS -->
+      <!-- v6 per-moment sound design: each sound chosen for what is on screen (CC0 unless credited) -->
+      <audio id="sx-brand-twinkle" src="assets/audio/sfx4/brand-twinkle.mp3" data-start="6.66" data-duration="2.6" data-track-index="73" data-volume="0.158"></audio><!-- -17 dBFS · Beaklet letters rise -->
+      <audio id="sx-panel1" src="assets/audio/sfx4/panel-paper1.mp3" data-start="8.52" data-duration="0.75" data-track-index="74" data-volume="0.146"></audio><!-- -15 dBFS · panel 1 slides in (paper) -->
+      <audio id="sx-panel2" src="assets/audio/sfx4/panel-flick.mp3" data-start="8.71" data-duration="0.58" data-track-index="75" data-volume="0.172"></audio><!-- -16 dBFS · panel 2 flicks in -->
+      <audio id="sx-panel3" src="assets/audio/sfx4/panel-paper3.mp3" data-start="8.73" data-duration="0.89" data-track-index="76" data-volume="0.141"></audio><!-- -15 dBFS · panel 3 slides in (heavier paper) -->
+      <audio id="sx-stamp" src="assets/audio/sfx4/stamp.mp3" data-start="10.26" data-duration="0.58" data-track-index="77" data-volume="0.254"></audio><!-- -12 dBFS · Worth keeping. banner stamps down -->
+      <audio id="sx-rise-drop" src="assets/audio/sfx4/rise-into-drop.mp3" data-start="9.97" data-duration="2.15" data-track-index="78" data-volume="0.14"></audio><!-- -18 dBFS · reverse air into the 12s drop -->
+      <audio id="sx-pencil" src="assets/audio/sfx4/pencil-sketch.mp3" data-start="12.35" data-duration="1.05" data-track-index="79" data-volume="0.396"></audio><!-- -12 dBFS · hornbill line art sketches itself -->
+      <audio id="sx-wing" src=".media/audio/sfx/sfx_011.mp3" data-start="12.69" data-duration="2.35" data-track-index="80" data-volume="0.283"></audio><!-- -16 dBFS · the hornbill: soft wing flap -->
+      <audio id="sx-dive" src="assets/audio/sfx4/dive-whoosh.mp3" data-start="16.78" data-duration="0.49" data-track-index="81" data-volume="0.196"></audio><!-- -13 dBFS · camera dives into the beak -->
+      <audio id="sx-cap-click" src="assets/audio/sfx4/cap-click.mp3" data-start="20.74" data-duration="0.46" data-track-index="82" data-volume="0.13"></audio><!-- -14 dBFS · cut to the cap close-up: pen click -->
+      <audio id="sx-page-a" src="assets/audio/sfx4/page-turn-a.mp3" data-start="25.29" data-duration="1.0" data-track-index="83" data-volume="0.157"></audio><!-- -14 dBFS · journal page turn (Cultures) -->
+      <audio id="sx-shutter-a" src="assets/audio/sfx4/shutter-a.mp3" data-start="27.0" data-duration="0.67" data-track-index="84" data-volume="0.143"></audio><!-- -15 dBFS · FIG. card lands: camera shutter -->
+      <audio id="sx-page-b" src="assets/audio/sfx4/page-turn-b.mp3" data-start="28.55" data-duration="0.56" data-track-index="85" data-volume="0.154"></audio><!-- -17 dBFS · journal page turn (Form) -->
+      <audio id="sx-ting" src="assets/audio/sfx3/glass-ting.mp3" data-start="30.17" data-duration="1.2" data-track-index="86" data-volume="0.1"></audio><!-- -21 dBFS · detail inset + callout ring -->
+      <audio id="sx-shutter-b" src="assets/audio/sfx4/shutter-b.mp3" data-start="33.22" data-duration="0.63" data-track-index="87" data-volume="0.204"></audio><!-- -12 dBFS · light study: second exposure -->
+      <audio id="sx-shimmer" src="assets/audio/sfx4/light-shimmer.mp3" data-start="34.35" data-duration="2.4" data-track-index="88" data-volume="0.118"></audio><!-- -18 dBFS · key light sweeps the pen -->
+      <audio id="sx-push" src="assets/audio/sfx4/push-whoosh.mp3" data-start="36.21" data-duration="0.42" data-track-index="89" data-volume="0.266"></audio><!-- -12 dBFS · card pushes through to full frame -->
+      <audio id="sx-rise-logo" src="assets/audio/sfx4/rise-into-logo.mp3" data-start="39.98" data-duration="0.66" data-track-index="90" data-volume="0.177"></audio><!-- -16 dBFS · reverse swell into the end-card boom -->
+      <audio id="sx-iris" src="assets/audio/sfx4/iris-whoosh.mp3" data-start="4.982" data-duration="2.2" data-track-index="91" data-volume="0.207"></audio><!-- -15 dBFS · deep whoosh swells into the mustard wipe, peaks as the iris opens (Kinoton, CC0) -->
+      <audio id="sx-disc-rattle" src=".media/audio/sfx/sfx_005.mp3" data-start="26.39" data-duration="3.0" data-track-index="92" data-volume="0.14" data-automation='{"version":1,"lanes":[{"target":"volume","points":[{"t":0,"v":1},{"t":2.55,"v":1},{"t":3.0,"v":0}]}]}'></audio><!-- -18 dBFS · the "coin" rattle the user picked from Preview_v4 (8–10s there): builds as the disc tumbles, stops dead on the settle at 28.79s (original_sound, CC BY 3.0) -->
+    </div>
+
+    <script>
+      (function () {
+        const tl = gsap.timeline({ paused: true });
+        const $ = (s) => document.querySelector(s);
+        const $$ = (s) => Array.from(document.querySelectorAll(s));
+
+        // ---------- helpers ----------
+        function drawIn(els, at, dur, stagger, ease) {
+          els.forEach((p, i) => {
+            const len = Math.ceil(p.getTotalLength ? p.getTotalLength() : 600) + 2;
+            gsap.set(p, { strokeDasharray: len, strokeDashoffset: len });
+            tl.to(p, { strokeDashoffset: 0, duration: dur, ease: ease || "power2.inOut" }, at + i * (stagger || 0));
+          });
+        }
+        function maskIn(container, at, stagger) {
+          const lines = $$(container + " .line-mask > span");
+          tl.fromTo(lines, { yPercent: 110 }, { yPercent: 0, duration: 0.7, ease: "expo.out", stagger: stagger || 0.18 }, at);
+        }
+        function inkWipe(sel, at, dur) {
+          tl.fromTo(sel, { clipPath: "inset(-10% 100% -10% 0%)", filter: "blur(6px)" }, { clipPath: "inset(-10% -4% -10% 0%)", filter: "blur(0px)", duration: dur, ease: "power1.inOut" }, at);
+        }
+        function kenBurns(sel, at, dur, from, to) {
+          tl.fromTo(sel, { scale: from }, { scale: to, duration: dur, ease: "none" }, at);
+        }
+        function windowed(id, a, b, prop) {
+          const p = prop || "opacity";
+          tl.set(id, p === "opacity" ? { opacity: 0 } : { visibility: "hidden" }, 0);
+          tl.set(id, p === "opacity" ? { opacity: 1 } : { visibility: "visible" }, a);
+          tl.set(id, p === "opacity" ? { opacity: 0 } : { visibility: "hidden" }, b);
+        }
+        function chapterIn(scene, at) {
+          tl.fromTo(scene + " .chapter", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.6, ease: "power3.out" }, at);
+        }
+
+        // ---------- grain: seeded jitter, 12 fps ----------
+        let seed = 7;
+        const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+        for (let t = 0; t < 45; t += 1 / 12) {
+          tl.set("#grain .tex", { x: Math.round((rnd() - 0.5) * 400), y: Math.round((rnd() - 0.5) * 600) }, t);
+        }
+
+        // ---------- watermark ----------
+        tl.fromTo("#watermark", { opacity: 0 }, { opacity: 0.55, duration: 0.8, ease: "sine.out" }, 0.3);
+
+        // stacked text slots: only the active one is in the layout at any time
+        [
+          ["#s4a", 17.0, 20.95], ["#s4b", 21.0, 24.36], ["#ws1", 24.4, 25.95], ["#ws2", 26.0, 27.6], ["#ws3", 27.7, 28.27],
+          ["#ws4", 28.28, 28.82], ["#ws5", 28.83, 29.37], ["#ws6", 29.6, 33.6], ["#s6a", 33.6, 36.4], ["#s6b", 36.4, 40.5],
+          ["#sw1", 0.8, 1.1], ["#sw2", 1.1, 1.4], ["#sw3", 1.4, 1.7], ["#sw4", 1.7, 2.3], ["#ask", 2.85, 4.5], ["#write-word", 4.4, 6.3],
+        ].forEach(([id, a, b]) => windowed(id, a, b, "visibility"));
+
+        // ================= S1 HOOK =================
+        // ruled notebook lines + margin rule draw out from the centre
+        const ruled = $("#ruled");
+        for (let i = 0; i < 15; i++) {
+          const d = document.createElement("div");
+          d.className = "rl";
+          d.style.top = 120 + i * 120 + "px";
+          ruled.appendChild(d);
+        }
+        const margin = document.createElement("div");
+        margin.className = "margin";
+        ruled.appendChild(margin);
+        tl.fromTo("#ruled .rl", { scaleX: 0 }, { scaleX: 1, duration: 0.9, ease: "expo.out", stagger: { each: 0.03, from: "center" } }, 0.25);
+        tl.fromTo("#ruled .margin", { scaleY: 0, transformOrigin: "50% 0%" }, { scaleY: 1, duration: 1.0, ease: "expo.out" }, 0.4);
+
+        // the ink dot — our through-object
+        tl.fromTo("#dot", { y: -700, scaleX: 0.7, scaleY: 1.5 }, { y: 0, scaleX: 1, scaleY: 1, duration: 0.42, ease: "power3.in" }, 0);
+        tl.to("#dot", { scaleX: 1.6, scaleY: 0.55, duration: 0.07, ease: "power1.out" }, 0.42);
+        tl.to("#dot", { scaleX: 1, scaleY: 1, duration: 0.35, ease: "elastic.out(1, 0.4)" }, 0.49);
+        // dot opens into the phone screen
+        tl.to("#dot", { scale: 0, duration: 0.18, ease: "power2.in" }, 0.62);
+        drawIn([$("#phone-path")], 0.62, 0.55, 0, "power3.out");
+        tl.fromTo("#phone", { scale: 0.86, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.55, ease: "expo.out" }, 0.62);
+
+        // kinetic slam — one per keystroke, distinct entrances
+        tl.fromTo("#sw1", { scale: 1.6, filter: "blur(18px)", opacity: 0 }, { scale: 1, filter: "blur(0px)", opacity: 1, duration: 0.22, ease: "power4.out" }, 0.8);
+        tl.fromTo("#sw2", { x: 520, opacity: 0 }, { x: 0, opacity: 1, duration: 0.2, ease: "expo.out" }, 1.1);
+        tl.fromTo("#sw3", { y: 360, filter: "blur(10px)" }, { y: 0, filter: "blur(0px)", duration: 0.22, ease: "expo.out" }, 1.4);
+        tl.fromTo("#sw4", { x: -560, skewX: 18 }, { x: 0, skewX: 0, duration: 0.22, ease: "expo.out" }, 1.7);
+        tl.to("#sw4", { x: 1300, skewX: -20, filter: "blur(14px)", duration: 0.28, ease: "power3.in" }, 2.02);
+        tl.fromTo("#io-label", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 0.9);
+        tl.to("#io-label", { opacity: 0, duration: 0.25 }, 2.05);
+        // phone shrinks back into the dot
+        tl.to("#phone", { scale: 0.04, opacity: 0, duration: 0.45, ease: "power3.in" }, 2.05);
+        tl.fromTo("#dot", { scale: 0 }, { scale: 1, duration: 0.4, ease: "back.out(3)", immediateRender: false }, 2.45);
+
+        // "when did you last…" — waterfall, word by word with the VO
+        const askWords = $$("#ask .wd");
+        [2.9, 3.15, 3.4, 3.62].forEach((t, i) => tl.fromTo(askWords[i], { y: 60, opacity: 0, filter: "blur(8px)" }, { y: 0, opacity: 1, filter: "blur(0px)", duration: 0.45, ease: "expo.out" }, t));
+        // the drop falls, trailing ink
+        tl.to("#dot", { y: 420, scaleY: 1.35, scaleX: 0.8, duration: 0.6, ease: "power2.in" }, 3.78);
+        drawIn([$("#trail-path")], 3.82, 0.58, 0, "power2.in");
+        tl.to("#trail", { opacity: 0, duration: 0.4 }, 4.5);
+        tl.to("#ask", { opacity: 0, y: -40, filter: "blur(8px)", duration: 0.35, ease: "power2.in" }, 4.3);
+        tl.to("#ruled", { opacity: 0.35, duration: 0.4 }, 4.38);
+        // impact: splash, ripples, sunburst
+        tl.to("#dot", { scaleX: 1.8, scaleY: 0.5, duration: 0.06 }, 4.38);
+        tl.to("#dot", { scaleX: 1, scaleY: 1, duration: 0.3, ease: "elastic.out(1, 0.45)" }, 4.44);
+        $$("#ripple .rp").forEach((c, i) => {
+          tl.set(c, { opacity: 0 }, 0);
+          tl.fromTo(c, { attr: { r: 18 }, opacity: 1 }, { attr: { r: 160 + i * 110 }, opacity: 0, duration: 1.2 + i * 0.2, ease: "expo.out", immediateRender: false }, 4.38 + i * 0.08);
+        });
+        const raysG = $("#rays-g");
+        for (let i = 0; i < 40; i++) {
+          const a0 = (i / 40) * Math.PI * 2;
+          const a1 = a0 + Math.PI / 80;
+          const p = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          p.setAttribute("d", `M0 0 L ${Math.cos(a0) * 1000} ${Math.sin(a0) * 1000} L ${Math.cos(a1) * 1000} ${Math.sin(a1) * 1000} Z`);
+          p.setAttribute("fill", "#e0a82e");
+          raysG.appendChild(p);
+        }
+        tl.fromTo("#rays", { opacity: 0, scale: 0.5, rotation: -6 }, { opacity: 0.1, scale: 1, rotation: 0, duration: 0.8, ease: "expo.out" }, 4.4);
+        tl.to("#rays", { rotation: 10, duration: 1.6, ease: "none" }, 5.2);
+        // write? — ink erupts
+        inkWipe("#write-word", 4.46, 0.72);
+        tl.fromTo("#write-word", { scale: 1.12 }, { scale: 1, duration: 1.0, ease: "expo.out" }, 4.46);
+        drawIn([$("#ul1")], 4.95, 0.5);
+        // dot swells into a mustard colour wipe; the iris opens into the footage
+        tl.to("#dot", { opacity: 0, duration: 0.01 }, 5.3);
+        tl.fromTo("#mustard-fill", { scale: 0 }, { scale: 130, duration: 0.42, ease: "power3.in" }, 5.3);
+        tl.to("#write-word, #write-underline, #rays, #ruled", { opacity: 0, duration: 0.2 }, 5.55);
+        tl.set("#mustard-hole", { opacity: 1 }, 5.72);
+        tl.set("#mustard-fill", { opacity: 0 }, 5.72);
+        tl.fromTo("#mustard-hole", { "--r": "0px" }, { "--r": "1600px", duration: 0.7, ease: "power3.inOut", immediateRender: false }, 5.74);
+        chapterIn("#s1", 0.4);
+        tl.to("#s1 .chapter", { opacity: 0, duration: 0.3 }, 5.4);
+
+        // ================= S2 INK + STACKED PANELS =================
+        kenBurns("#w-writing .inner", 5.72, 3.1, 1.12, 1.0);
+        chapterIn("#s2", 6.3);
+        tl.fromTo("#s2-label", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.9, ease: "power3.out" }, 6.4);
+        (function () {
+          const el = $("#s2-brand");
+          const txt = el.textContent;
+          el.textContent = "";
+          const spans = [...txt].map((c) => {
+            const s = document.createElement("span");
+            s.style.display = "inline-block";
+            s.textContent = c;
+            el.appendChild(s);
+            return s;
+          });
+          tl.fromTo(spans, { opacity: 0, y: 70, filter: "blur(12px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.8, ease: "expo.out", stagger: 0.055 }, 6.6);
+        })();
+        tl.fromTo("#s2-sub", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 7.5);
+        tl.to("#s2-text", { opacity: 0, y: -40, filter: "blur(8px)", duration: 0.4, ease: "power2.in" }, 8.4);
+        tl.to("#s2-scrim", { opacity: 0, duration: 0.4 }, 8.6);
+        tl.to("#w-writing", { opacity: 0.25, duration: 0.4 }, 8.7);
+        // panels slide in from alternating sides
+        [["#p1", -1, 8.7], ["#p2", 1, 8.85], ["#p3", -1, 9.0]].forEach(([id, dir, t]) => {
+          tl.set(id, { opacity: 1 }, t);
+          tl.fromTo(id, { x: dir * 1080 }, { x: 0, duration: 0.6, ease: "expo.out" }, t);
+          tl.fromTo(id + " .inner", { scale: 1.25 }, { scale: 1.05, duration: 3.2, ease: "power2.out" }, t);
+          tl.fromTo(id + " .plabel", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out" }, t + 0.35);
+          tl.fromTo(id + " .plabel b", { scaleX: 0, transformOrigin: "0% 50%" }, { scaleX: 1, duration: 0.5, ease: "expo.out" }, t + 0.4);
+          tl.fromTo(id + " .pcode", { opacity: 0 }, { opacity: 1, duration: 0.4 }, t + 0.5);
+        });
+        // Majin-style diagonal banner slam
+        tl.set("#banner", { opacity: 1 }, 10.3);
+        tl.fromTo("#banner", { rotation: -6, x: -1400 }, { rotation: -6, x: 0, duration: 0.32, ease: "expo.out" }, 10.3);
+        tl.fromTo("#banner .bt", { x: 120, opacity: 0 }, { x: 0, opacity: 1, duration: 0.5, ease: "expo.out" }, 10.38);
+        tl.to("#banner", { x: 40, duration: 0.98, ease: "none" }, 10.62);
+        // everything slams out into black for the drop
+        tl.to("#banner", { x: 1500, duration: 0.3, ease: "power3.in" }, 11.6);
+        [["#p1", 1], ["#p2", -1], ["#p3", 1]].forEach(([id, dir], i) => tl.to(id, { x: dir * 1100, duration: 0.32, ease: "power3.in" }, 11.62 + i * 0.04));
+        tl.set("#p1, #p2, #p3, #banner", { opacity: 0 }, 12.0);
+        tl.to("#s2 .chapter", { opacity: 0, duration: 0.3 }, 11.6);
+        tl.to("#w-writing", { opacity: 0, duration: 0.25 }, 11.7);
+
+        // ================= S3 THE GUIDE (DROP at 12.0) =================
+        tl.fromTo("#glow", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 2.2, ease: "power2.out" }, 12.0);
+        tl.to("#glow", { scale: 1.08, duration: 2.6, ease: "sine.inOut" }, 14.2);
+        chapterIn("#s3", 12.3);
+        tl.fromTo("#s3-label", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.9, ease: "power3.out" }, 12.5);
+        drawIn(["#hb-head", "#hb-casque", "#hb-beak", "#hb-throat", "#hb-mouth", "#hb-patch", "#hb-cheek", "#hb-eyering", "#hb-f1", "#hb-f2"].map((s) => $(s)), 12.05, 1.3, 0.08);
+        $$("#hornbill .fillable").forEach((p) => gsap.set(p, { fill: p.getAttribute("data-fill"), fillOpacity: 0 }));
+        tl.to("#hornbill .fillable", { fillOpacity: 1, duration: 0.7, ease: "sine.out", stagger: 0.12 }, 13.5);
+        tl.fromTo("#hb-eye", { scale: 0, transformOrigin: "50% 50%" }, { scale: 1, duration: 0.4, ease: "back.out(3)" }, 14.0);
+        tl.fromTo("#hornbill", { y: 30, scale: 0.96 }, { y: -10, scale: 1.0, duration: 4.4, ease: "sine.out" }, 12.0);
+        tl.fromTo("#s3-name", { opacity: 0, y: 30, filter: "blur(10px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.8, ease: "expo.out" }, 15.1);
+        tl.fromTo("#s3-meta", { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "sine.out" }, 15.6);
+        tl.to("#s3 .center-col, #s3 .chapter", { opacity: 0, duration: 0.3, ease: "power2.in" }, 16.35);
+        tl.to("#hornbill", { scale: 7, x: -1450, y: 120, opacity: 0, filter: "blur(10px)", duration: 0.55, ease: "power3.in", transformOrigin: "50% 50%" }, 16.5);
+        tl.to("#glow", { opacity: 0, duration: 0.4 }, 16.6);
+
+        // ================= S4 THE SIGNATURE =================
+        tl.fromTo("#w-caprise-a .inner", { scale: 1.3, filter: "blur(12px)" }, { scale: 1.06, filter: "blur(0px)", duration: 0.9, ease: "expo.out" }, 17.0);
+        tl.to("#w-caprise-a .inner", { scale: 1.0, duration: 3.1, ease: "none" }, 17.9);
+        chapterIn("#s4", 17.2);
+        maskIn("#s4a", 17.45, 0.3);
+        tl.to("#s4a", { opacity: 0, y: -20, duration: 0.35, ease: "power2.in" }, 20.6);
+        kenBurns("#w-caplogo .inner", 21.0, 3.36, 1.0, 1.06);
+        tl.fromTo("#s4b-label", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.9, ease: "power3.out" }, 21.2);
+        maskIn("#s4b", 21.5, 0.55);
+        tl.to("#s4b, #s4 .chapter", { opacity: 0, duration: 0.25, ease: "power2.in" }, 24.08);
+
+        // ================= S5 WORLDS (24.36) =================
+        kenBurns("#w-duowide .inner", 24.36, 1.51, 1.08, 1.0);
+        kenBurns("#w-caprise-b .inner", 25.87, 1.51, 1.0, 1.06);
+        chapterIn("#s5", 24.5);
+        tl.fromTo("#s5-top", { opacity: 0 }, { opacity: 1, duration: 0.6 }, 24.6);
+        tl.to("#s5-top", { opacity: 0, duration: 0.25 }, 27.1);
+        [
+          ["#ws1", 24.5, 25.95],
+          ["#ws2", 26.13, 27.6],
+          ["#ws3", 27.75, 28.27],
+          ["#ws4", 28.3, 28.82],
+          ["#ws5", 28.85, 29.37],
+        ].forEach(([id, a, b]) => {
+          const icon = $(id + " .icon path");
+          const len = Math.ceil(icon.getTotalLength()) + 2;
+          gsap.set(icon, { strokeDasharray: len, strokeDashoffset: len });
+          const fast = b - a < 0.8;
+          tl.fromTo(id, { opacity: 0, y: 40, filter: "blur(10px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: fast ? 0.18 : 0.35, ease: "expo.out" }, a);
+          tl.to(icon, { strokeDashoffset: 0, duration: fast ? 0.35 : 0.8, ease: "power2.out" }, a);
+          tl.to(id, { opacity: 0, y: -24, duration: 0.12, ease: "power2.in" }, b - 0.12);
+        });
+
+        // ================= 16:9 SHOWCASE (27.38 – 36.4) =================
+        windowed("#sc-fill", 27.38, 36.4);
+        windowed("#sc-card", 27.38, 36.4);
+        windowed("#sc-chrome", 27.38, 36.4);
+        tl.fromTo("#sc-fill .inner", { scale: 1.75 }, { scale: 1.55, duration: 9.0, ease: "none" }, 27.38);
+        // card arrives with a perspective settle; contents cut inside the same frame
+        tl.fromTo("#sc-card", { y: 140, rotationX: 22, scale: 0.92, transformPerspective: 1400 }, { y: 0, rotationX: 0, scale: 1, duration: 0.7, ease: "expo.out" }, 27.38);
+        tl.fromTo("#sc-card-inner", { scale: 1.12 }, { scale: 1.0, duration: 2.27, ease: "power2.out" }, 27.38);
+        tl.fromTo("#sc-card-inner", { scale: 1.0 }, { scale: 1.08, duration: 3.95, ease: "none", immediateRender: false }, 29.65);
+        tl.fromTo("#sc-card-inner", { scale: 1.1 }, { scale: 1.0, duration: 2.8, ease: "power1.out", immediateRender: false }, 33.6);
+        drawIn($$("#sc-marks path"), 27.5, 0.45, 0.05, "expo.out");
+        drawIn($$("#sc-dim path"), 27.7, 0.5, 0.04, "expo.out");
+        tl.fromTo("#sc-dimtext", { opacity: 0 }, { opacity: 1, duration: 0.4 }, 27.9);
+        tl.fromTo("#sc-labels .r", { opacity: 0 }, { opacity: 1, duration: 0.4 }, 27.6);
+        [["#scl-1", 27.5, 28.89], ["#scl-2", 28.89, 29.65], ["#scl-3", 29.65, 33.6], ["#scl-4", 33.6, 36.4]].forEach(([id, a, b]) => {
+          windowed(id, a, b, "visibility");
+          tl.fromTo(id, { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: 0.3, ease: "power3.out" }, a);
+        });
+        // hero: detail inset + callout from the beak
+        windowed("#sc-inset", 29.95, 33.6);
+        gsap.set("#sc-inset-inner", { transformOrigin: "0% 0%" });
+        tl.fromTo("#sc-inset", { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.55, ease: "expo.out" }, 30.15);
+        tl.fromTo("#sc-inset-inner", { scale: 2.6, x: 213, y: -63 }, { scale: 2.25, x: 213, y: -26, duration: 3.45, ease: "power1.out" }, 30.15);
+        drawIn([$("#co-ring")], 29.95, 0.4, 0, "expo.out");
+        drawIn([$("#co-line")], 30.05, 0.45, 0, "power2.out");
+        tl.set("#sc-callout", { opacity: 0 }, 0);
+        tl.set("#sc-callout", { opacity: 1 }, 29.9);
+        maskIn("#ws6", 30.2, 0.3);
+        tl.fromTo("#ws6 .mono", { opacity: 0 }, { opacity: 1, duration: 0.4 }, 30.7);
+        tl.to("#ws6, #sc-inset, #sc-callout", { opacity: 0, duration: 0.25, ease: "power2.in" }, 33.3);
+        // light study: a key light passes over the card
+        tl.fromTo("#sweep-light", { x: -200 }, { x: 1900, duration: 1.6, ease: "power1.inOut" }, 34.0);
+        // exit: the card pushes through to the full-frame hero angle
+        tl.to("#sc-card", { scale: 1.9, opacity: 0, filter: "blur(10px)", duration: 0.3, ease: "power3.in" }, 36.12);
+        tl.to("#sc-chrome, #sc-fill", { opacity: 0, duration: 0.25 }, 36.1);
+
+        // ================= S6 CRAFT =================
+        chapterIn("#s6", 33.8);
+        maskIn("#s6a", 33.9, 0.7);
+        tl.to("#s6a", { opacity: 0, y: -20, duration: 0.3, ease: "power2.in" }, 36.05);
+        windowed("#s6-scrim", 36.4, 40.5);
+        tl.fromTo("#w-duoangle .inner", { scale: 1.4, filter: "blur(10px)" }, { scale: 1.12, filter: "blur(0px)", duration: 0.6, ease: "expo.out" }, 36.4);
+        tl.to("#w-duoangle .inner", { scale: 1.0, duration: 3.15, ease: "none" }, 37.0);
+        tl.fromTo("#s6b-label", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.9, ease: "power3.out" }, 36.6);
+        maskIn("#s6b", 36.9, 0.45);
+        tl.to("#s6b, #s6 .chapter", { opacity: 0, duration: 0.3, ease: "power2.in" }, 39.9);
+        tl.to("#w-duoangle .inner", { scale: 1.2, filter: "blur(8px)", duration: 0.35, ease: "power2.in" }, 40.15);
+        tl.fromTo("#flash", { opacity: 0 }, { opacity: 0.85, duration: 0.12, ease: "power2.in" }, 40.3);
+        tl.to("#flash", { opacity: 0, duration: 0.5, ease: "power2.out" }, 40.42);
+
+        // ================= S7 END CARD (40.4) =================
+        tl.fromTo("#end-glow", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 2, ease: "power2.out" }, 40.45);
+        tl.to("#end-glow", { scale: 1.06, duration: 2.1, ease: "sine.inOut" }, 42.45);
+        // monogram: oval opens, then the hornbill flies in through it
+        tl.fromTo("#brand-mono", { scale: 0.6, opacity: 0, transformOrigin: "50% 50%" }, { scale: 1, opacity: 1, duration: 0.7, ease: "back.out(1.8)" }, 40.55);
+        tl.fromTo("#mg-bird-g", { x: -70, opacity: 0 }, { x: 0, opacity: 1, duration: 0.8, ease: "expo.out" }, 40.8);
+        tl.fromTo("#mg-bird", { clipPath: "inset(0% 100% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.7, ease: "power2.out" }, 40.8);
+        // wordmark: letters rise in, the wave crossbar settles last
+        tl.fromTo("#brand-word .wm-l", { opacity: 0, y: 40, filter: "blur(10px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.8, ease: "expo.out", stagger: 0.07 }, 40.95);
+        tl.to("#brand-mono", { y: -8, duration: 3.0, ease: "sine.inOut" }, 41.6);
+        tl.fromTo("#end-meta", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 1, ease: "power3.out" }, 41.6);
+        inkWipe("#end-tag", 42.44, 0.7);
+        drawIn([$("#ul2")], 42.95, 0.5);
+        tl.to("#s7 > *", { opacity: 0, duration: 0.45, ease: "sine.in" }, 44.55);
+
+        window.__timelines["main"] = tl;
+      })();
+    </script>
+  </body>
+</html>
